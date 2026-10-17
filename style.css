@@ -346,36 +346,6 @@ body {
   animation: auraGlowPulse 1.4s ease-in-out forwards;
 }
 
-#ian-avatar.flashing-win.rainbow-flash #ian-color-overlay {
-  animation: colorFlashPulse 1.4s ease-in-out forwards, rainbowCycle 3s linear infinite;
-}
-
-@keyframes rainbowCycle {
-  0% { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
-}
-
-/* Disco Jackpot Mode */
-@keyframes discoBorder {
-  0% { stroke: #FF1744; }
-  20% { stroke: #FFEA00; }
-  40% { stroke: #00E676; }
-  60% { stroke: #00B0FF; }
-  80% { stroke: #D500F9; }
-  100% { stroke: #FF1744; }
-}
-
-.disco-jackpot #bear-gold-border {
-  animation: discoBorder 0.4s linear infinite;
-  stroke-width: 14;
-}
-
-.disco-jackpot .toy-star .star-body,
-.disco-jackpot .toy-star .dice-body,
-.disco-jackpot .toy-star .animal-body {
-  animation: winnerBounce 0.5s infinite alternate;
-}
-
 /* Star Winner Celebration Bounce */
 @keyframes winnerBounce {
   0% { transform: scale(1); }

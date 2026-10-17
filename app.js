@@ -15,8 +15,7 @@ const GAME_MODES = {
         color: '#E040FB',
         badgeGradient: 'linear-gradient(135deg, #BA68C8, #FFEA00, #00B0FF, #FF6D00, #00E676)',
         textColor: '#FF4081',
-        audioKey: 'color_0',
-        isRainbow: true
+        audioKey: 'color_0'
       },
       {
         index: 1,
@@ -131,15 +130,14 @@ const GAME_MODES = {
       },
       {
         index: 5,
-        name: 'Sexa! ⚅ Slå igen!',
-        speech: 'Sexa! Slå igen!',
-        sub: 'Jackpot! Du får slå igen!',
+        name: 'Sexa! ⚅',
+        speech: 'Sexa!',
+        sub: 'Sex steg framåt!',
         color: '#FFD600',
-        badgeGradient: 'linear-gradient(135deg, #FFD600, #FF6D00)',
+        badgeGradient: '#FFD600',
         textColor: '#FFE082',
         dicePips: 6,
-        audioKey: 'dice_6',
-        isJackpot: true
+        audioKey: 'dice_6'
       }
     ]
   },
@@ -193,8 +191,7 @@ const GAME_MODES = {
         textColor: '#FFCC80',
         emoji: '🦁',
         animalType: 'lion',
-        audioKey: 'animal_3',
-        isJackpot: true
+        audioKey: 'animal_3'
       },
       {
         index: 4,
@@ -605,11 +602,10 @@ class StarSpinner {
     this.centerButton.classList.add('disabled');
     this.quickSpinBtn.disabled = true;
     this.toyContainer.classList.add('spinning');
-    this.toyContainer.classList.remove('disco-jackpot');
     this.clearAllLeds();
 
     if (this.ianAvatar) {
-      this.ianAvatar.classList.remove('flashing-win', 'rainbow-flash');
+      this.ianAvatar.classList.remove('flashing-win');
       if (this.ianColorOverlay) this.ianColorOverlay.style.opacity = '0';
       if (this.ianAura) this.ianAura.style.opacity = '0';
     }
@@ -699,33 +695,22 @@ class StarSpinner {
       if (this.ianRing) {
         this.ianRing.setAttribute('stroke', winnerData.textColor || flashColor);
       }
-      this.ianAvatar.classList.remove('flashing-win', 'rainbow-flash');
-      if (winnerData.isRainbow) {
-        this.ianAvatar.classList.add('rainbow-flash');
-      }
+      this.ianAvatar.classList.remove('flashing-win');
       void this.ianAvatar.offsetWidth;
       this.ianAvatar.classList.add('flashing-win');
-    }
-
-    // Check if Disco / Jackpot (Rainbow or 6 or Lion)
-    if (winnerData.isRainbow || winnerData.isJackpot) {
-      this.triggerDiscoJackpot();
     }
 
     // Confetti burst!
     if (window.confetti) {
       window.confetti.burst({
-        count: winnerData.isRainbow || winnerData.isJackpot ? 85 : 45,
-        rainbow: winnerData.isRainbow,
-        colors: winnerData.isRainbow
-          ? ['#FF1744', '#FFEA00', '#00E676', '#00B0FF', '#D500F9']
-          : [winnerData.color, '#FFFFFF', '#FFE082']
+        count: 45,
+        colors: [winnerData.color || '#FFE082', '#FFFFFF', '#FFE082']
       });
     }
 
     // Play victory sound & announcement
     if (window.soundFX) {
-      window.soundFX.playWin(winningIndex, winnerData.isRainbow || winnerData.isJackpot);
+      window.soundFX.playWin(winningIndex);
       setTimeout(() => {
         window.soundFX.speakResult(winnerData.audioKey, winnerData.speech, winnerData.animalType);
       }, 550);
@@ -761,22 +746,6 @@ class StarSpinner {
     this.centerButton.classList.remove('disabled');
     this.quickSpinBtn.disabled = false;
     this.isSpinning = false;
-  }
-
-  triggerDiscoJackpot() {
-    this.toyContainer.classList.add('disco-jackpot');
-    // Ensure strictly ONLY the winning lamp is lit, all other 5 lamps stay off
-    for (let i = 0; i < 6; i++) {
-      if (i !== this.currentLedIndex) {
-        this.setLed(i, false);
-      }
-    }
-    if (this.currentLedIndex >= 0) {
-      this.setLed(this.currentLedIndex, true);
-    }
-    setTimeout(() => {
-      this.toyContainer.classList.remove('disco-jackpot');
-    }, 3200);
   }
 
   // Player Management

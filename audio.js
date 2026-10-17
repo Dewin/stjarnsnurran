@@ -195,18 +195,12 @@ class SoundFX {
   }
 
   // Triumphant victory fanfare when landing on the chosen star
-  playWin(starIndex, isRainbow = false) {
+  playWin(starIndex) {
     if (!this.soundEnabled) return;
     this.init();
     if (!this.ctx) return;
 
     const now = this.ctx.currentTime;
-
-    // Disco Jackpot Fanfare for Rainbow
-    if (isRainbow || starIndex === 0) {
-      this.playDiscoJingle();
-      return;
-    }
 
     // Standard joyful victory arpeggio: C5, E5, G5, C6
     const notes = [

@@ -333,33 +333,53 @@ class StarSpinner {
   initEvents() {
     // Spin trigger on center button (Ian) and Quick Spin Button
     const handleSpin = (e) => {
-      e.preventDefault();
+      if (e) {
+        try { e.preventDefault(); } catch (err) {}
+      }
       if (this.centerButton) this.centerButton.blur();
       if (this.quickSpinBtn) this.quickSpinBtn.blur();
       if (this.isSpinning) return;
       this.spin();
     };
 
-    this.centerButton.addEventListener('click', handleSpin);
-    this.centerButton.addEventListener('keydown', (e) => {
-      if (e.key === ' ' || e.key === 'Enter') handleSpin(e);
+    // Robust pointer handling for center button: handles desktop mouse clicks and fast mobile taps seamlessly
+    let centerPointerActive = false;
+    let centerPointerStartX = 0;
+    let centerPointerStartY = 0;
+
+    this.centerButton.addEventListener('pointerdown', (e) => {
+      if (this.isSpinning) return;
+      centerPointerActive = true;
+      centerPointerStartX = e.clientX;
+      centerPointerStartY = e.clientY;
+      this.centerButton.classList.add('pressed');
+      if (this.centerButton) this.centerButton.blur();
     });
 
-    // Touch depression on center button
-    this.centerButton.addEventListener('pointerdown', () => {
+    this.centerButton.addEventListener('pointerup', (e) => {
+      if (!centerPointerActive) return;
+      centerPointerActive = false;
+      this.centerButton.classList.remove('pressed');
       if (this.centerButton) this.centerButton.blur();
-      if (!this.isSpinning) {
-        this.centerButton.classList.add('pressed');
+
+      const dist = Math.hypot(e.clientX - centerPointerStartX, e.clientY - centerPointerStartY);
+      if (dist < 25 && !this.isSpinning) {
+        handleSpin(e);
       }
     });
 
     const releaseButton = () => {
+      centerPointerActive = false;
       this.centerButton.classList.remove('pressed');
       if (this.centerButton) this.centerButton.blur();
     };
-    this.centerButton.addEventListener('pointerup', releaseButton);
+
     this.centerButton.addEventListener('pointercancel', releaseButton);
     this.centerButton.addEventListener('pointerleave', releaseButton);
+    this.centerButton.addEventListener('click', handleSpin);
+    this.centerButton.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') handleSpin(e);
+    });
 
     // Quick spin button
     this.quickSpinBtn.addEventListener('click', handleSpin);

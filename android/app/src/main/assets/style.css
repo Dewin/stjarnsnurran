@@ -247,6 +247,8 @@ body {
 .center-btn,
 #center-button {
   cursor: pointer;
+  pointer-events: auto;
+  touch-action: none;
   transition: transform 0.1s ease-out;
   transform-origin: 320px 315px;
   outline: none !important;
@@ -254,6 +256,8 @@ body {
   -webkit-tap-highlight-color: transparent !important;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
   -webkit-focus-ring-color: transparent !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
 }
 
 .center-btn:focus,
@@ -268,13 +272,18 @@ body {
   outline-style: none !important;
   -webkit-tap-highlight-color: transparent !important;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  -webkit-focus-ring-color: transparent !important;
   box-shadow: none !important;
 }
 
 .center-btn path,
 .center-btn circle,
-.center-btn image {
-  pointer-events: none;
+.center-btn image,
+.center-btn #btn-body,
+.center-btn .center-hit-area,
+.center-btn #ian-avatar {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .center-btn:hover #btn-body {

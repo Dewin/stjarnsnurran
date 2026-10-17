@@ -903,13 +903,7 @@ class StarSpinner {
     const player = this.players[this.currentPlayerIdx];
     if (!player) return;
     this.currentPlayerAvatar.textContent = player.avatar;
-
-    const lastRoll = (player.history && player.history.length > 0) ? player.history[0] : null;
-    if (lastRoll) {
-      this.currentPlayerText.innerHTML = `${player.name}s tur att snurra! <span class="player-turn-last-roll" title="${player.name}s förra resultat">(Senast: ${lastRoll.name})</span>`;
-    } else {
-      this.currentPlayerText.textContent = `${player.name}s tur att snurra!`;
-    }
+    this.currentPlayerText.textContent = `${player.name}s tur att snurra!`;
     this.playerBanner.style.setProperty('--player-color', player.color);
     this.renderHistory();
   }
@@ -1048,10 +1042,6 @@ class StarSpinner {
       const card = document.createElement('div');
       card.className = 'player-card' + (isStarter ? ' is-start-player' : '');
 
-      const lastRollText = (p.history && p.history.length > 0)
-        ? `<span class="player-card-last-roll" title="${p.name}s senaste snurr">Senast: ${p.history[0].name}</span>`
-        : '';
-
       card.innerHTML = `
         <div class="player-card-header">
           <div class="player-identity">
@@ -1060,12 +1050,9 @@ class StarSpinner {
               <span class="player-avatar-icon">${p.avatar}</span>
               <span class="avatar-edit-badge">✏️</span>
             </button>
-            <div class="player-name-col">
-              <div class="player-name-row">
-                <span class="player-name">${p.name}</span>
-                ${isStarter ? '<span class="tag-start-player">👑 Startar</span>' : ''}
-              </div>
-              ${lastRollText}
+            <div class="player-name-row">
+              <span class="player-name">${p.name}</span>
+              ${isStarter ? '<span class="tag-start-player">👑 Startar</span>' : ''}
             </div>
           </div>
           ${!isStarter ? `

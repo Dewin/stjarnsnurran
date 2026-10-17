@@ -100,6 +100,20 @@
             <stop offset="100%" stop-color="#FFF9C4"/>
           </linearGradient>
 
+          <!-- Dice White Plastic Gradient -->
+          <linearGradient id="diceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="70%" stop-color="#FAFAFD"/>
+            <stop offset="100%" stop-color="#E8E8F2"/>
+          </linearGradient>
+
+          <!-- Gold Dice Gradient for Jackpot Die 6 -->
+          <linearGradient id="goldDiceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFFDE7"/>
+            <stop offset="60%" stop-color="#FFF9C4"/>
+            <stop offset="100%" stop-color="#FFE082"/>
+          </linearGradient>
+
           <!-- LED On Glow Gradient -->
           <radialGradient id="ledGlowGrad" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stop-color="#FFFFE0"/>
@@ -223,123 +237,409 @@ C 402 128, 365 152, 320 152 Z"
           <polygon points="185,340 188,345 194,345 189,349 191,355 185,351 179,355 181,349 176,345 182,345"/>
         </g>
 
-        <!-- The 6 Large Stars Group -->
+        <!-- The 6 Slots Group (Supporting Modes: Colors / Dice / Animals) -->
         <g id="stars-group">
-          <!-- Star 0: Regnbågsstjärna -->
+          <!-- Slot 0 (Top: Regnbåge / Tärning 1 / Hund) -->
           <g id="star-0" class="toy-star" data-index="0">
-            <g class="star-body" filter="url(#starGlowShadow)">
-              <path d="M 320.0 173.0 L 305.9 153.6 L 320.0 125.0 L 334.1 153.6 Z" fill="#BA68C8" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
-              <path d="M 320.0 173.0 L 334.1 153.6 L 365.7 158.2 L 342.8 180.4 Z" fill="#FFEA00" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
-              <path d="M 320.0 173.0 L 342.8 180.4 L 348.2 211.8 L 320.0 197.0 Z" fill="#00B0FF" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
-              <path d="M 320.0 173.0 L 320.0 197.0 L 291.8 211.8 L 297.2 180.4 Z" fill="#FF6D00" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
-              <path d="M 320.0 173.0 L 297.2 180.4 L 274.3 158.2 L 305.9 153.6 Z" fill="#00E676" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+            <!-- Mode: Colors -->
+            <g class="slot-mode slot-mode-colors">
+              <g class="star-body" filter="url(#starGlowShadow)">
+                <path d="M 320.0 173.0 L 305.9 153.6 L 320.0 125.0 L 334.1 153.6 Z" fill="#BA68C8" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M 320.0 173.0 L 334.1 153.6 L 365.7 158.2 L 342.8 180.4 Z" fill="#FFEA00" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M 320.0 173.0 L 342.8 180.4 L 348.2 211.8 L 320.0 197.0 Z" fill="#00B0FF" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M 320.0 173.0 L 320.0 197.0 L 291.8 211.8 L 297.2 180.4 Z" fill="#FF6D00" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M 320.0 173.0 L 297.2 180.4 L 274.3 158.2 L 305.9 153.6 Z" fill="#00E676" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+              </g>
+              <g class="led-assembly">
+                <circle cx="320.0" cy="173.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="317.8" cy="170.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="320.0" cy="173.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="320.0" cy="173.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="320.0" cy="173.0" r="11" fill="url(#ledGlowGrad)"/>
+                  <circle cx="320.0" cy="173.0" r="5.5" fill="#FFFDE7"/>
+                  <ellipse cx="318.5" cy="171.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+                </g>
+              </g>
             </g>
-            <g id="star-sym-0" class="star-symbol-overlay" style="pointer-events: none;"></g>
-            <!-- LED Assembly -->
-            <g class="led-assembly" id="led-0">
-              <circle cx="320.0" cy="173.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
-              <ellipse cx="317.8" cy="170.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
-              <g class="led-active-layer" style="display: none;">
-                <circle cx="320.0" cy="173.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
-                <circle cx="320.0" cy="173.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
-                <circle cx="320.0" cy="173.0" r="11" fill="url(#ledGlowGrad)"/>
-                <circle cx="320.0" cy="173.0" r="5.5" fill="#FFFDE7"/>
-                <ellipse cx="318.5" cy="171.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+
+            <!-- Mode: Dice (Die 1) -->
+            <g class="slot-mode slot-mode-dice" style="display: none;">
+              <g class="dice-body" filter="url(#starGlowShadow)">
+                <rect x="291" y="144" width="58" height="58" rx="13" fill="url(#diceGrad)" stroke="#C8C8D6" stroke-width="2.2"/>
+                <rect x="293" y="146" width="54" height="54" rx="11" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.95"/>
+                <circle cx="320" cy="173" r="7.5" fill="#E53935" stroke="#B71C1C" stroke-width="1.2" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="317.5" cy="170.5" r="2.2" fill="#FFFFFF" opacity="0.6"/>
+              </g>
+              <g class="led-assembly">
+                <circle cx="320" cy="137" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="318.2" cy="135" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="320" cy="137" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="320" cy="137" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="320" cy="137" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="320" cy="137" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="318.8" cy="135.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Animals (Hund 🐶) -->
+            <g class="slot-mode slot-mode-animals" style="display: none;">
+              <g class="animal-body" filter="url(#starGlowShadow)">
+                <circle cx="320" cy="173" r="33" fill="#FFF8E1" stroke="#FFB300" stroke-width="3.8"/>
+                <text x="320" y="168" font-size="34" text-anchor="middle" dominant-baseline="central" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.25))">🐶</text>
+                <rect x="298" y="188" width="44" height="15" rx="7.5" fill="#FFB300"/>
+                <text x="320" y="196" font-size="9" font-weight="900" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="0.6">HUND</text>
+              </g>
+              <g class="led-assembly">
+                <circle cx="320" cy="137" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="318.2" cy="135" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="320" cy="137" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="320" cy="137" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="320" cy="137" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="320" cy="137" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="318.8" cy="135.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
               </g>
             </g>
           </g>
 
-          <!-- Star 1: Gul stjärna -->
+          <!-- Slot 1 (Top-Right: Gul / Tärning 2 / Katt) -->
           <g id="star-1" class="toy-star" data-index="1">
-            <path class="star-body" d="M 443.0 196.0 L 457.1 224.6 L 488.6 229.2 L 465.8 251.4 L 471.2 282.8 L 443.0 268.0 L 414.8 282.8 L 420.2 251.4 L 397.3 229.2 L 428.9 224.6 Z" fill="#FFEA00" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
-            <g id="star-sym-1" class="star-symbol-overlay" style="pointer-events: none;"></g>
-            <!-- LED Assembly -->
-            <g class="led-assembly" id="led-1">
-              <circle cx="443.0" cy="244.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
-              <ellipse cx="440.8" cy="241.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
-              <g class="led-active-layer" style="display: none;">
-                <circle cx="443.0" cy="244.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
-                <circle cx="443.0" cy="244.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
-                <circle cx="443.0" cy="244.0" r="11" fill="url(#ledGlowGrad)"/>
-                <circle cx="443.0" cy="244.0" r="5.5" fill="#FFFDE7"/>
-                <ellipse cx="441.5" cy="242.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+            <!-- Mode: Colors -->
+            <g class="slot-mode slot-mode-colors">
+              <path class="star-body" d="M 443.0 196.0 L 457.1 224.6 L 488.6 229.2 L 465.8 251.4 L 471.2 282.8 L 443.0 268.0 L 414.8 282.8 L 420.2 251.4 L 397.3 229.2 L 428.9 224.6 Z" fill="#FFEA00" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
+              <g class="led-assembly">
+                <circle cx="443.0" cy="244.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="440.8" cy="241.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="443.0" cy="244.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="443.0" cy="244.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="443.0" cy="244.0" r="11" fill="url(#ledGlowGrad)"/>
+                  <circle cx="443.0" cy="244.0" r="5.5" fill="#FFFDE7"/>
+                  <ellipse cx="441.5" cy="242.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Dice (Die 2) -->
+            <g class="slot-mode slot-mode-dice" style="display: none;">
+              <g class="dice-body" filter="url(#starGlowShadow)">
+                <rect x="414" y="215" width="58" height="58" rx="13" fill="url(#diceGrad)" stroke="#C8C8D6" stroke-width="2.2"/>
+                <rect x="416" y="217" width="54" height="54" rx="11" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.95"/>
+                <circle cx="428.5" cy="229.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="427" cy="228" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="457.5" cy="258.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="456" cy="257" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+              </g>
+              <g class="led-assembly">
+                <circle cx="473" cy="227" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="471.2" cy="225" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="473" cy="227" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="473" cy="227" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="473" cy="227" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="473" cy="227" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="471.8" cy="225.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Animals (Katt 🐱) -->
+            <g class="slot-mode slot-mode-animals" style="display: none;">
+              <g class="animal-body" filter="url(#starGlowShadow)">
+                <circle cx="443" cy="244" r="33" fill="#FBE9E7" stroke="#FF7043" stroke-width="3.8"/>
+                <text x="443" y="239" font-size="34" text-anchor="middle" dominant-baseline="central" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.25))">🐱</text>
+                <rect x="421" y="259" width="44" height="15" rx="7.5" fill="#FF7043"/>
+                <text x="443" y="267" font-size="9" font-weight="900" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="0.6">KATT</text>
+              </g>
+              <g class="led-assembly">
+                <circle cx="473" cy="227" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="471.2" cy="225" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="473" cy="227" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="473" cy="227" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="473" cy="227" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="473" cy="227" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="471.8" cy="225.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
               </g>
             </g>
           </g>
 
-          <!-- Star 2: Blå stjärna -->
+          <!-- Slot 2 (Bottom-Right: Blå / Tärning 3 / Ko) -->
           <g id="star-2" class="toy-star" data-index="2">
-            <path class="star-body" d="M 443.0 338.0 L 457.1 366.6 L 488.6 371.2 L 465.8 393.4 L 471.2 424.8 L 443.0 410.0 L 414.8 424.8 L 420.2 393.4 L 397.3 371.2 L 428.9 366.6 Z" fill="#00B0FF" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
-            <g id="star-sym-2" class="star-symbol-overlay" style="pointer-events: none;"></g>
-            <!-- LED Assembly -->
-            <g class="led-assembly" id="led-2">
-              <circle cx="443.0" cy="386.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
-              <ellipse cx="440.8" cy="383.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
-              <g class="led-active-layer" style="display: none;">
-                <circle cx="443.0" cy="386.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
-                <circle cx="443.0" cy="386.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
-                <circle cx="443.0" cy="386.0" r="11" fill="url(#ledGlowGrad)"/>
-                <circle cx="443.0" cy="386.0" r="5.5" fill="#FFFDE7"/>
-                <ellipse cx="441.5" cy="384.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+            <!-- Mode: Colors -->
+            <g class="slot-mode slot-mode-colors">
+              <path class="star-body" d="M 443.0 338.0 L 457.1 366.6 L 488.6 371.2 L 465.8 393.4 L 471.2 424.8 L 443.0 410.0 L 414.8 424.8 L 420.2 393.4 L 397.3 371.2 L 428.9 366.6 Z" fill="#00B0FF" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
+              <g class="led-assembly">
+                <circle cx="443.0" cy="386.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="440.8" cy="383.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="443.0" cy="386.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="443.0" cy="386.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="443.0" cy="386.0" r="11" fill="url(#ledGlowGrad)"/>
+                  <circle cx="443.0" cy="386.0" r="5.5" fill="#FFFDE7"/>
+                  <ellipse cx="441.5" cy="384.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Dice (Die 3) -->
+            <g class="slot-mode slot-mode-dice" style="display: none;">
+              <g class="dice-body" filter="url(#starGlowShadow)">
+                <rect x="414" y="357" width="58" height="58" rx="13" fill="url(#diceGrad)" stroke="#C8C8D6" stroke-width="2.2"/>
+                <rect x="416" y="359" width="54" height="54" rx="11" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.95"/>
+                <circle cx="428.5" cy="371.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="427" cy="370" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="443" cy="386" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="441.5" cy="384.5" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="457.5" cy="400.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="456" cy="399" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+              </g>
+              <g class="led-assembly">
+                <circle cx="473" cy="403" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="471.2" cy="401" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="473" cy="403" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="473" cy="403" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="473" cy="403" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="473" cy="403" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="471.8" cy="401.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Animals (Ko 🐮) -->
+            <g class="slot-mode slot-mode-animals" style="display: none;">
+              <g class="animal-body" filter="url(#starGlowShadow)">
+                <circle cx="443" cy="386" r="33" fill="#E8F5E9" stroke="#43A047" stroke-width="3.8"/>
+                <text x="443" y="381" font-size="34" text-anchor="middle" dominant-baseline="central" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.25))">🐮</text>
+                <rect x="421" y="401" width="44" height="15" rx="7.5" fill="#43A047"/>
+                <text x="443" y="409" font-size="9" font-weight="900" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="0.6">KO</text>
+              </g>
+              <g class="led-assembly">
+                <circle cx="473" cy="403" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="471.2" cy="401" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="473" cy="403" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="473" cy="403" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="473" cy="403" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="473" cy="403" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="471.8" cy="401.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
               </g>
             </g>
           </g>
 
-          <!-- Star 3: Orange stjärna -->
+          <!-- Slot 3 (Bottom: Orange / Tärning 4 / Lejon) -->
           <g id="star-3" class="toy-star" data-index="3">
-            <path class="star-body" d="M 320.0 409.0 L 334.1 437.6 L 365.7 442.2 L 342.8 464.4 L 348.2 495.8 L 320.0 481.0 L 291.8 495.8 L 297.2 464.4 L 274.3 442.2 L 305.9 437.6 Z" fill="#FF6D00" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
-            <g id="star-sym-3" class="star-symbol-overlay" style="pointer-events: none;"></g>
-            <!-- LED Assembly -->
-            <g class="led-assembly" id="led-3">
-              <circle cx="320.0" cy="457.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
-              <ellipse cx="317.8" cy="454.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
-              <g class="led-active-layer" style="display: none;">
-                <circle cx="320.0" cy="457.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
-                <circle cx="320.0" cy="457.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
-                <circle cx="320.0" cy="457.0" r="11" fill="url(#ledGlowGrad)"/>
-                <circle cx="320.0" cy="457.0" r="5.5" fill="#FFFDE7"/>
-                <ellipse cx="318.5" cy="455.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+            <!-- Mode: Colors -->
+            <g class="slot-mode slot-mode-colors">
+              <path class="star-body" d="M 320.0 409.0 L 334.1 437.6 L 365.7 442.2 L 342.8 464.4 L 348.2 495.8 L 320.0 481.0 L 291.8 495.8 L 297.2 464.4 L 274.3 442.2 L 305.9 437.6 Z" fill="#FF6D00" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
+              <g class="led-assembly">
+                <circle cx="320.0" cy="457.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="317.8" cy="454.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="320.0" cy="457.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="320.0" cy="457.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="320.0" cy="457.0" r="11" fill="url(#ledGlowGrad)"/>
+                  <circle cx="320.0" cy="457.0" r="5.5" fill="#FFFDE7"/>
+                  <ellipse cx="318.5" cy="455.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Dice (Die 4) -->
+            <g class="slot-mode slot-mode-dice" style="display: none;">
+              <g class="dice-body" filter="url(#starGlowShadow)">
+                <rect x="291" y="428" width="58" height="58" rx="13" fill="url(#diceGrad)" stroke="#C8C8D6" stroke-width="2.2"/>
+                <rect x="293" y="430" width="54" height="54" rx="11" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.95"/>
+                <circle cx="305.5" cy="442.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="304" cy="441" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="334.5" cy="442.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="333" cy="441" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="305.5" cy="471.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="304" cy="470" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="334.5" cy="471.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="333" cy="470" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+              </g>
+              <g class="led-assembly">
+                <circle cx="320" cy="493" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="318.2" cy="491" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="320" cy="493" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="320" cy="493" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="320" cy="493" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="320" cy="493" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="318.8" cy="491.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Animals (Lejon 🦁 Jackpot) -->
+            <g class="slot-mode slot-mode-animals" style="display: none;">
+              <g class="animal-body" filter="url(#starGlowShadow)">
+                <circle cx="320" cy="457" r="33" fill="#FFF3E0" stroke="#FF9800" stroke-width="4.0"/>
+                <text x="320" y="452" font-size="34" text-anchor="middle" dominant-baseline="central" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.25))">🦁</text>
+                <rect x="298" y="472" width="44" height="15" rx="7.5" fill="#FF9800"/>
+                <text x="320" y="480" font-size="9" font-weight="900" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="0.6">LEJON</text>
+              </g>
+              <g class="led-assembly">
+                <circle cx="320" cy="493" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="318.2" cy="491" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="320" cy="493" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="320" cy="493" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="320" cy="493" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="320" cy="493" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="318.8" cy="491.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
               </g>
             </g>
           </g>
 
-          <!-- Star 4: Grön stjärna -->
+          <!-- Slot 4 (Bottom-Left: Grön / Tärning 5 / Groda) -->
           <g id="star-4" class="toy-star" data-index="4">
-            <path class="star-body" d="M 197.0 338.0 L 211.1 366.6 L 242.7 371.2 L 219.8 393.4 L 225.2 424.8 L 197.0 410.0 L 168.8 424.8 L 174.2 393.4 L 151.4 371.2 L 182.9 366.6 Z" fill="#00E676" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
-            <g id="star-sym-4" class="star-symbol-overlay" style="pointer-events: none;"></g>
-            <!-- LED Assembly -->
-            <g class="led-assembly" id="led-4">
-              <circle cx="197.0" cy="386.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
-              <ellipse cx="194.8" cy="383.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
-              <g class="led-active-layer" style="display: none;">
-                <circle cx="197.0" cy="386.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
-                <circle cx="197.0" cy="386.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
-                <circle cx="197.0" cy="386.0" r="11" fill="url(#ledGlowGrad)"/>
-                <circle cx="197.0" cy="386.0" r="5.5" fill="#FFFDE7"/>
-                <ellipse cx="195.5" cy="384.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+            <!-- Mode: Colors -->
+            <g class="slot-mode slot-mode-colors">
+              <path class="star-body" d="M 197.0 338.0 L 211.1 366.6 L 242.7 371.2 L 219.8 393.4 L 225.2 424.8 L 197.0 410.0 L 168.8 424.8 L 174.2 393.4 L 151.4 371.2 L 182.9 366.6 Z" fill="#00E676" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
+              <g class="led-assembly">
+                <circle cx="197.0" cy="386.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="194.8" cy="383.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="197.0" cy="386.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="197.0" cy="386.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="197.0" cy="386.0" r="11" fill="url(#ledGlowGrad)"/>
+                  <circle cx="197.0" cy="386.0" r="5.5" fill="#FFFDE7"/>
+                  <ellipse cx="195.5" cy="384.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Dice (Die 5) -->
+            <g class="slot-mode slot-mode-dice" style="display: none;">
+              <g class="dice-body" filter="url(#starGlowShadow)">
+                <rect x="168" y="357" width="58" height="58" rx="13" fill="url(#diceGrad)" stroke="#C8C8D6" stroke-width="2.2"/>
+                <rect x="170" y="359" width="54" height="54" rx="11" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.95"/>
+                <circle cx="182.5" cy="371.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="181" cy="370" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="211.5" cy="371.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="210" cy="370" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="197" cy="386" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="195.5" cy="384.5" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="182.5" cy="400.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="181" cy="399" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="211.5" cy="400.5" r="5.2" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="210" cy="399" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+              </g>
+              <g class="led-assembly">
+                <circle cx="167" cy="403" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="165.2" cy="401" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="167" cy="403" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="167" cy="403" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="167" cy="403" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="167" cy="403" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="165.8" cy="401.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Animals (Groda 🐸) -->
+            <g class="slot-mode slot-mode-animals" style="display: none;">
+              <g class="animal-body" filter="url(#starGlowShadow)">
+                <circle cx="197" cy="386" r="33" fill="#E8F8F5" stroke="#00C853" stroke-width="3.8"/>
+                <text x="197" y="381" font-size="34" text-anchor="middle" dominant-baseline="central" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.25))">🐸</text>
+                <rect x="175" y="401" width="44" height="15" rx="7.5" fill="#00C853"/>
+                <text x="197" y="409" font-size="9" font-weight="900" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="0.6">GRODA</text>
+              </g>
+              <g class="led-assembly">
+                <circle cx="167" cy="403" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="165.2" cy="401" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="167" cy="403" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="167" cy="403" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="167" cy="403" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="167" cy="403" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="165.8" cy="401.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
               </g>
             </g>
           </g>
 
-          <!-- Star 5: Lila stjärna -->
+          <!-- Slot 5 (Top-Left: Lila / Tärning 6 / Apa) -->
           <g id="star-5" class="toy-star" data-index="5">
-            <path class="star-body" d="M 197.0 196.0 L 211.1 224.6 L 242.7 229.2 L 219.8 251.4 L 225.2 282.8 L 197.0 268.0 L 168.8 282.8 L 174.2 251.4 L 151.4 229.2 L 182.9 224.6 Z" fill="#BA68C8" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
-            <g id="star-sym-5" class="star-symbol-overlay" style="pointer-events: none;"></g>
-            <!-- LED Assembly -->
-            <g class="led-assembly" id="led-5">
-              <circle cx="197.0" cy="244.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
-              <ellipse cx="194.8" cy="241.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
-              <g class="led-active-layer" style="display: none;">
-                <circle cx="197.0" cy="244.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
-                <circle cx="197.0" cy="244.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
-                <circle cx="197.0" cy="244.0" r="11" fill="url(#ledGlowGrad)"/>
-                <circle cx="197.0" cy="244.0" r="5.5" fill="#FFFDE7"/>
-                <ellipse cx="195.5" cy="242.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+            <!-- Mode: Colors -->
+            <g class="slot-mode slot-mode-colors">
+              <path class="star-body" d="M 197.0 196.0 L 211.1 224.6 L 242.7 229.2 L 219.8 251.4 L 225.2 282.8 L 197.0 268.0 L 168.8 282.8 L 174.2 251.4 L 151.4 229.2 L 182.9 224.6 Z" fill="#BA68C8" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
+              <g class="led-assembly">
+                <circle cx="197.0" cy="244.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="194.8" cy="241.2" rx="2.8" ry="1.6" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="197.0" cy="244.0" r="34" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="197.0" cy="244.0" r="22" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="197.0" cy="244.0" r="11" fill="url(#ledGlowGrad)"/>
+                  <circle cx="197.0" cy="244.0" r="5.5" fill="#FFFDE7"/>
+                  <ellipse cx="195.5" cy="242.2" rx="2.2" ry="1.2" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Dice (Die 6 Jackpot!) -->
+            <g class="slot-mode slot-mode-dice" style="display: none;">
+              <g class="dice-body" filter="url(#starGlowShadow)">
+                <rect x="168" y="215" width="58" height="58" rx="13" fill="url(#goldDiceGrad)" stroke="#FBC02D" stroke-width="2.8"/>
+                <rect x="170" y="217" width="54" height="54" rx="11" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.95"/>
+                <circle cx="182.5" cy="229.5" r="5.0" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="181" cy="228" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="182.5" cy="244.0" r="5.0" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="181" cy="242.5" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="182.5" cy="258.5" r="5.0" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="181" cy="257" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="211.5" cy="229.5" r="5.0" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="210" cy="228" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="211.5" cy="244.0" r="5.0" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="210" cy="242.5" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+                <circle cx="211.5" cy="258.5" r="5.0" fill="#1A1A24" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.4))"/>
+                <circle cx="210" cy="257" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+              </g>
+              <g class="led-assembly">
+                <circle cx="167" cy="227" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="165.2" cy="225" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="167" cy="227" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="167" cy="227" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="167" cy="227" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="167" cy="227" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="165.8" cy="225.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Mode: Animals (Apa 🐵) -->
+            <g class="slot-mode slot-mode-animals" style="display: none;">
+              <g class="animal-body" filter="url(#starGlowShadow)">
+                <circle cx="197" cy="244" r="33" fill="#F3E5F5" stroke="#AB47BC" stroke-width="3.8"/>
+                <text x="197" y="239" font-size="34" text-anchor="middle" dominant-baseline="central" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.25))">🐵</text>
+                <rect x="175" y="259" width="44" height="15" rx="7.5" fill="#AB47BC"/>
+                <text x="197" y="267" font-size="9" font-weight="900" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="0.6">APA</text>
+              </g>
+              <g class="led-assembly">
+                <circle cx="167" cy="227" r="8" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+                <ellipse cx="165.2" cy="225" rx="2.2" ry="1.3" fill="#FFFFFF" opacity="0.5"/>
+                <g class="led-active-layer" style="display: none;">
+                  <circle cx="167" cy="227" r="28" fill="#FF2600" opacity="0.45" filter="url(#ledBloom)"/>
+                  <circle cx="167" cy="227" r="18" fill="#FF5722" opacity="0.85" filter="url(#ledBloom)"/>
+                  <circle cx="167" cy="227" r="9" fill="url(#ledGlowGrad)"/>
+                  <circle cx="167" cy="227" r="4.5" fill="#FFFDE7"/>
+                  <ellipse cx="165.8" cy="225.5" rx="1.8" ry="1.0" fill="#FFFFFF"/>
+                </g>
               </g>
             </g>
           </g>
-
-
         </g>
 
         <!-- Center Star Button with Ian's Face in Center -->

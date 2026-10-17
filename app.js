@@ -289,15 +289,10 @@ class StarSpinner {
     this.ianAura = document.getElementById('ian-aura');
     this.ianRing = document.getElementById('ian-ring');
 
-    // Cache star & LED elements
+    // Cache slot elements (representing the 6 positions)
     this.starElements = [];
-    this.ledLayers = [];
-    this.symbolOverlays = [];
     for (let i = 0; i < 6; i++) {
       this.starElements[i] = document.getElementById(`star-${i}`);
-      const ledAssembly = document.getElementById(`led-${i}`);
-      this.ledLayers[i] = ledAssembly.querySelector('.led-active-layer');
-      this.symbolOverlays[i] = document.getElementById(`star-sym-${i}`);
     }
 
     this.initEvents();
@@ -472,36 +467,22 @@ class StarSpinner {
   }
 
   updateMode(modeId) {
-    const starCoords = [
-      { x: 320, y: 173 },
-      { x: 443, y: 244 },
-      { x: 443, y: 386 },
-      { x: 320, y: 457 },
-      { x: 197, y: 386 },
-      { x: 197, y: 244 }
-    ];
-
-    const items = GAME_MODES[modeId].items;
-
     for (let i = 0; i < 6; i++) {
-      const overlay = this.symbolOverlays[i];
-      const item = items[i];
-      const { x, y } = starCoords[i];
-
-      overlay.innerHTML = '';
-
-      if (modeId === 'dice') {
-        // Draw dice dots
-        const pips = item.dicePips;
-        const pipMarkup = this.generateDicePips(x, y, pips);
-        overlay.innerHTML = pipMarkup;
-      } else if (modeId === 'animals') {
-        // Draw animal emoji
-        overlay.innerHTML = `
-          <text x="${x}" y="${y + 1}" font-size="24" text-anchor="middle" dominant-baseline="central"
-                filter="drop-shadow(0 2px 4px rgba(0,0,0,0.6))">${item.emoji}</text>
-        `;
+      const star = this.starElements[i];
+      if (star) {
+        const colEl = star.querySelector('.slot-mode-colors');
+        const diceEl = star.querySelector('.slot-mode-dice');
+        const animEl = star.querySelector('.slot-mode-animals');
+        if (colEl) colEl.style.display = modeId === 'colors' ? 'block' : 'none';
+        if (diceEl) diceEl.style.display = modeId === 'dice' ? 'block' : 'none';
+        if (animEl) animEl.style.display = modeId === 'animals' ? 'block' : 'none';
       }
+    }
+
+    // Refresh LED state for newly active mode
+    this.clearAllLeds();
+    if (this.currentLedIndex >= 0) {
+      this.setLed(this.currentLedIndex, true);
     }
 
     // Update Result Card initial text for mode
@@ -515,37 +496,22 @@ class StarSpinner {
     }
   }
 
-  generateDicePips(cx, cy, count) {
-    const pipR = 3.6;
-    const off = 13;
-    const pipPos = {
-      1: [[0, 0]],
-      2: [[-off, -off], [off, off]],
-      3: [[-off, -off], [0, 0], [off, off]],
-      4: [[-off, -off], [off, -off], [-off, off], [off, off]],
-      5: [[-off, -off], [off, -off], [0, 0], [-off, off], [off, off]],
-      6: [[-off, -off], [off, -off], [-off, 0], [off, 0], [-off, off], [off, off]]
-    };
-
-    const coords = pipPos[count] || [[0, 0]];
-    let markup = '';
-    coords.forEach(([dx, dy]) => {
-      markup += `
-        <circle cx="${cx + dx}" cy="${cy + dy}" r="${pipR}" fill="#FFFFFF" stroke="#1A1A24" stroke-width="1.2"
-                filter="drop-shadow(0 1px 2px rgba(0,0,0,0.5))"/>
-      `;
-    });
-    return markup;
-  }
-
   setLed(index, isLit) {
     if (index >= 0 && index < 6) {
-      this.ledLayers[index].style.display = isLit ? 'block' : 'none';
+      const star = this.starElements[index];
+      if (!star) return;
+      const activeGroup = star.querySelector(`.slot-mode-${this.activeMode}`);
+      if (activeGroup) {
+        const ledLayer = activeGroup.querySelector('.led-active-layer');
+        if (ledLayer) {
+          ledLayer.style.display = isLit ? 'block' : 'none';
+          if (!isLit) ledLayer.classList.remove('pulsing');
+        }
+      }
       if (isLit) {
-        this.starElements[index].classList.add('lit');
+        star.classList.add('lit');
       } else {
-        this.starElements[index].classList.remove('lit', 'winner');
-        this.ledLayers[index].classList.remove('pulsing');
+        star.classList.remove('lit', 'winner');
       }
     }
   }
@@ -553,6 +519,14 @@ class StarSpinner {
   clearAllLeds() {
     for (let i = 0; i < 6; i++) {
       this.setLed(i, false);
+      const star = this.starElements[i];
+      if (star) {
+        star.querySelectorAll('.led-active-layer').forEach((layer) => {
+          layer.style.display = 'none';
+          layer.classList.remove('pulsing');
+        });
+        star.classList.remove('lit', 'winner');
+      }
     }
   }
 
@@ -629,7 +603,16 @@ class StarSpinner {
 
     this.toyContainer.classList.remove('spinning');
     this.starElements[winningIndex].classList.add('winner');
-    this.ledLayers[winningIndex].classList.add('pulsing');
+
+    // Ensure strictly only the winning LED is lit
+    for (let i = 0; i < 6; i++) {
+      this.setLed(i, i === winningIndex);
+    }
+    const activeGroup = this.starElements[winningIndex].querySelector(`.slot-mode-${this.activeMode}`);
+    if (activeGroup) {
+      const activeLed = activeGroup.querySelector('.led-active-layer');
+      if (activeLed) activeLed.classList.add('pulsing');
+    }
 
     // Trigger Ian's face flash in winner color
     if (this.ianAvatar) {
@@ -709,22 +692,18 @@ class StarSpinner {
 
   triggerDiscoJackpot() {
     this.toyContainer.classList.add('disco-jackpot');
-    // Flash all LEDs in a circular chase
-    let count = 0;
-    const interval = setInterval(() => {
-      this.setLed(count % 6, true);
-      this.setLed((count + 3) % 6, true);
-      setTimeout(() => {
-        this.setLed(count % 6, false);
-        this.setLed((count + 3) % 6, false);
-      }, 100);
-      count++;
-      if (count > 16) {
-        clearInterval(interval);
-        this.toyContainer.classList.remove('disco-jackpot');
-        if (this.currentLedIndex >= 0) this.setLed(this.currentLedIndex, true);
+    // Ensure strictly ONLY the winning lamp is lit, all other 5 lamps stay off
+    for (let i = 0; i < 6; i++) {
+      if (i !== this.currentLedIndex) {
+        this.setLed(i, false);
       }
-    }, 110);
+    }
+    if (this.currentLedIndex >= 0) {
+      this.setLed(this.currentLedIndex, true);
+    }
+    setTimeout(() => {
+      this.toyContainer.classList.remove('disco-jackpot');
+    }, 3200);
   }
 
   // Player Management

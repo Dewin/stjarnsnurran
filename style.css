@@ -327,7 +327,9 @@ body {
   stroke-width: 14;
 }
 
-.disco-jackpot .toy-star .star-body {
+.disco-jackpot .toy-star .star-body,
+.disco-jackpot .toy-star .dice-body,
+.disco-jackpot .toy-star .animal-body {
   animation: winnerBounce 0.5s infinite alternate;
 }
 
@@ -350,8 +352,18 @@ body {
   animation: winnerBounce 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.toy-star.winner .star-body {
-  filter: drop-shadow(0 0 12px #FFFFFF) drop-shadow(0 4px 10px rgba(0,0,0,0.8));
+.toy-star.winner .star-body,
+.toy-star.winner .dice-body,
+.toy-star.winner .animal-body {
+  filter: drop-shadow(0 0 14px #FFFFFF) drop-shadow(0 4px 10px rgba(0,0,0,0.8));
+}
+
+.toy-star.lit .dice-body {
+  filter: drop-shadow(0 0 10px rgba(255, 87, 34, 0.8)) drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+
+.toy-star.lit .animal-body {
+  filter: drop-shadow(0 0 10px rgba(255, 87, 34, 0.8)) drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
 /* LED pulse animation on win */

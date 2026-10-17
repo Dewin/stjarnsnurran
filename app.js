@@ -271,6 +271,7 @@ class StarSpinner {
     this.btnVoiceStudio = document.getElementById('btn-voice-studio');
     this.btnShake = document.getElementById('btn-shake');
     this.btnSound = document.getElementById('btn-sound');
+    this.btnForceRefresh = document.getElementById('btn-force-refresh');
     this.btnFullscreen = document.getElementById('btn-fullscreen');
     this.btnQr = document.getElementById('btn-qr');
 
@@ -296,6 +297,7 @@ class StarSpinner {
     this.btnShufflePlayers = document.getElementById('btn-shuffle-players');
     this.btnStartPlayerMode = document.getElementById('btn-start-player-mode');
     this.btnStopPlayerMode = document.getElementById('btn-stop-player-mode');
+    this.btnModalRefresh = document.getElementById('btn-modal-refresh');
 
     this.modalEmojiPicker = document.getElementById('modal-emoji-picker');
     this.btnCloseEmoji = document.getElementById('btn-close-emoji');
@@ -370,6 +372,14 @@ class StarSpinner {
       this.btnSound.textContent = active ? '🔊' : '🔇';
       if (window.soundFX) window.soundFX.setSoundEnabled(active);
     });
+
+    // Refresh / Cache clearing buttons
+    if (this.btnForceRefresh) {
+      this.btnForceRefresh.addEventListener('click', () => this.forceRefreshApp());
+    }
+    if (this.btnModalRefresh) {
+      this.btnModalRefresh.addEventListener('click', () => this.forceRefreshApp());
+    }
 
     // Shake sensor toggle
     this.btnShake.addEventListener('click', () => {
@@ -1200,6 +1210,35 @@ class StarSpinner {
         navigator.vibrate(pattern);
       } catch (e) {}
     }
+  }
+
+  async forceRefreshApp() {
+    this.vibrate([30, 50]);
+    if (window.soundFX) window.soundFX.playButtonPress();
+
+    if (this.btnForceRefresh) {
+      this.btnForceRefresh.style.transition = 'transform 0.8s ease';
+      this.btnForceRefresh.style.transform = 'rotate(720deg)';
+    }
+
+    try {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const reg of registrations) {
+          await reg.unregister();
+        }
+      }
+    } catch (err) {
+      console.warn('Cache clearing error:', err);
+    }
+
+    // Force hard reload with timestamp cache-buster parameter
+    const cleanUrl = window.location.origin + window.location.pathname.split('?')[0].split('#')[0];
+    window.location.replace(`${cleanUrl}?v=${Date.now()}`);
   }
 
   openQrModal() {

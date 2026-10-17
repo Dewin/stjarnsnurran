@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -30,6 +30,7 @@
       <button id="btn-voice-studio" class="icon-btn" title="Spela in egna röster / ljud" aria-label="Röststudio">🎙️</button>
       <button id="btn-shake" class="icon-btn active" title="Skaka telefonen för att snurra: På/Av" aria-label="Skaka">📳</button>
       <button id="btn-sound" class="icon-btn active" title="Ljud På/Av" aria-label="Ljud På/Av">🔊</button>
+      <button id="btn-force-refresh" class="icon-btn" title="Hämta senaste versionen / Rensa cache" aria-label="Uppdatera">🔄</button>
       <button id="btn-fullscreen" class="icon-btn" title="Helskärm" aria-label="Helskärm">⛶</button>
       <button id="btn-qr" class="icon-btn" title="Dela / Öppna på mobil" aria-label="Öppna på mobil">📱</button>
     </div>
@@ -768,6 +769,14 @@ C 402 128, 365 152, 320 152 Z"
           ⏹️ Avsluta spelarläge
         </button>
       </div>
+      <div class="app-version-badge" style="text-align: center; font-size: 0.72rem; color: #888899; margin-top: 14px;">
+        Stjärnsnurran v1.7 • Turordning & Startspelare
+      </div>
+      <div style="text-align: center; margin-top: 6px;">
+        <button id="btn-modal-refresh" type="button" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); color: #B0B0C0; font-size: 0.72rem; border-radius: 6px; padding: 4px 10px; cursor: pointer;">
+          🔄 Ladda om & Hämta senaste versionen
+        </button>
+      </div>
     </div>
   </div>
 
@@ -798,17 +807,60 @@ C 402 128, 365 152, 320 152 Z"
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="confetti.js"></script>
-  <script src="audio.js"></script>
-  <script src="app.js"></script>
+  <!-- Cache Version Auto-Check -->
+  <script>
+    const APP_VERSION = 'v1.7';
+    if (localStorage.getItem('stjarnsnurran_installed_ver') !== APP_VERSION) {
+      localStorage.setItem('stjarnsnurran_installed_ver', APP_VERSION);
+      if ('caches' in window) {
+        caches.keys().then(keys => {
+          keys.forEach(k => {
+            if (k !== 'stjarnsnurran-v7') caches.delete(k);
+          });
+        });
+      }
+    }
+  </script>
 
-  <!-- Service Worker Registration for Offline PWA -->
+  <!-- Scripts -->
+  <script src="confetti.js?v=7"></script>
+  <script src="audio.js?v=7"></script>
+  <script src="app.js?v=7"></script>
+
+  <!-- Service Worker Registration with Aggressive Auto-Update -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(err => {
+        navigator.serviceWorker.register('sw.js?v=7').then((reg) => {
+          // Immediately check for SW script changes
+          reg.update();
+
+          if (reg.waiting) {
+            reg.waiting.postMessage({ action: 'skipWaiting' });
+          }
+
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('Ny version installerad, aktiverar...');
+                  newWorker.postMessage({ action: 'skipWaiting' });
+                }
+              });
+            }
+          });
+        }).catch(err => {
           console.log('SW registration error:', err);
+        });
+
+        // Auto-refresh when new service worker takes control
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
         });
       });
     }

@@ -540,11 +540,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 12px;
+  box-sizing: border-box;
   z-index: 1000;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
+  overflow-x: hidden;
 }
 
 .modal-overlay.open {
@@ -556,11 +558,13 @@ body {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 20px;
-  max-width: 360px;
+  max-width: 380px;
   width: 100%;
-  max-height: 85vh;
+  max-height: 88vh;
   overflow-y: auto;
-  padding: 20px;
+  overflow-x: hidden;
+  padding: 18px 14px;
+  box-sizing: border-box;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
   position: relative;
   text-align: center;
@@ -911,22 +915,27 @@ body {
 
 .player-add-row {
   display: flex;
+  align-items: center;
   gap: 6px;
-  margin-top: 10px;
+  margin-top: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .btn-avatar-picker-trigger {
+  flex-shrink: 0;
   background: rgba(255, 255, 255, 0.12);
   border: 1.5px solid var(--panel-border);
   border-radius: 10px;
-  padding: 6px 10px;
+  padding: 6px 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 1.3rem;
+  gap: 3px;
+  font-size: 1.25rem;
   color: white;
   transition: all 0.15s ease;
+  box-sizing: border-box;
 }
 
 .btn-avatar-picker-trigger:hover {
@@ -936,23 +945,45 @@ body {
 }
 
 .player-input {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0; /* CRITICAL: prevents input from forcing row wider than modal */
+  width: 100%;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--panel-border);
   color: white;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: 10px;
   font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.player-input:focus {
+  outline: none;
+  border-color: #FFD600;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .btn-add-player {
+  flex-shrink: 0; /* Ensures button stays completely inside card */
+  white-space: nowrap;
   background: #00C853;
   color: white;
   border: none;
-  padding: 8px 14px;
+  padding: 8px 12px;
   border-radius: 10px;
   font-weight: 700;
+  font-size: 0.88rem;
   cursor: pointer;
+  box-sizing: border-box;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.btn-add-player:hover {
+  background: #00E676;
+}
+
+.btn-add-player:active {
+  transform: scale(0.95);
 }
 
 /* Emoji Picker Grid */

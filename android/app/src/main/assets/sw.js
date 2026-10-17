@@ -1,5 +1,5 @@
 // Service Worker for Stjärnsnurran
-const CACHE_NAME = 'stjarnsnurran-v8';
+const CACHE_NAME = 'stjarnsnurran-v9';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

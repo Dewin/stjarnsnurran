@@ -757,6 +757,104 @@ body {
   cursor: pointer;
 }
 
+/* Voice Studio Enhancements & Star Color Indicators */
+.voice-color-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.voice-item-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  min-width: 0;
+  gap: 2px;
+}
+
+.voice-item-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+}
+
+.voice-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.voice-pos-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFE082;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.voice-sub-desc {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  opacity: 0.85;
+}
+
+/* Mode selector pills inside Voice Studio */
+.voice-mode-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.voice-mode-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.voice-mode-tab {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #DDDDDD;
+  border-radius: 10px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.voice-mode-tab:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #FFD600;
+}
+
+.voice-mode-tab.active {
+  background: #FFD600;
+  color: #121216;
+  border-color: #FFD600;
+  box-shadow: 0 0 8px rgba(255, 214, 0, 0.5);
+}
+
 /* Player Management List */
 .player-list {
   display: flex;

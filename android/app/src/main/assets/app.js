@@ -1254,6 +1254,7 @@ class StarSpinner {
 
   // Voice Studio Modal
   openVoiceModal() {
+    this.voiceStudioMode = this.activeMode || 'colors';
     this.renderVoiceItems();
     this.modalVoice.classList.add('open');
   }
@@ -1324,8 +1325,11 @@ class StarSpinner {
         const possessive = window.soundFX ? window.soundFX.getPossessive(p.name) : `${p.name}s tur`;
         row.innerHTML = `
           <div class="record-row-info">
-            <span>${p.avatar}</span>
-            <span>${p.name} ("${possessive}")</span>
+            <span style="font-size: 1.3rem;">${p.avatar}</span>
+            <div class="voice-item-text">
+              <div class="voice-item-title">${p.name}</div>
+              <div class="voice-sub-desc">Röst: "${possessive}"</div>
+            </div>
           </div>
           <div class="record-row-btns">
             <button class="btn-record" data-key="${pKey}">🔴 Spela in</button>
@@ -1338,21 +1342,85 @@ class StarSpinner {
       });
     }
 
-    // 3. Dynamic rows for current mode
+    // 3. Dynamic rows for chosen Voice Studio mode
+    if (!this.voiceStudioMode) {
+      this.voiceStudioMode = this.activeMode || 'colors';
+    }
+
+    // Setup Voice Mode Tabs
+    const voiceModeTabs = document.querySelectorAll('.voice-mode-tab');
+    voiceModeTabs.forEach((tab) => {
+      tab.classList.toggle('active', tab.dataset.vmode === this.voiceStudioMode);
+      tab.onclick = () => {
+        this.voiceStudioMode = tab.dataset.vmode;
+        this.renderVoiceItems();
+        if (window.soundFX) window.soundFX.playUiClick();
+      };
+    });
+
+    const modeData = GAME_MODES[this.voiceStudioMode] || GAME_MODES.colors;
     if (this.voiceModeHeader) {
-      this.voiceModeHeader.textContent = `⭐ ${GAME_MODES[this.activeMode].name} & Resultat:`;
+      this.voiceModeHeader.textContent = `⭐ ${modeData.name} & Resultat:`;
     }
 
     this.voiceItemsContainer.innerHTML = '';
-    const items = this.currentItems;
+    const items = modeData.items;
 
-    items.forEach((item) => {
+    const POSITION_NAMES = [
+      '⬆️ Längst upp',
+      '↗️ Uppe till höger',
+      '↘️ Nere till höger',
+      '⬇️ Längst ner',
+      '↙️ Nere till vänster',
+      '↖️ Uppe till vänster'
+    ];
+
+    items.forEach((item, idx) => {
+      const posLabel = POSITION_NAMES[idx] || `Position ${idx + 1}`;
       const row = document.createElement('div');
-      row.className = 'record-row';
+      row.className = 'record-row voice-item-row';
+
+      let badgeHtml = '';
+      if (this.voiceStudioMode === 'colors') {
+        if (item.index === 0) {
+          badgeHtml = `
+            <div class="voice-color-badge" style="background: ${item.badgeGradient}; box-shadow: 0 0 10px rgba(224, 64, 251, 0.5);">
+              <span style="font-size: 1.15rem; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));">🌈</span>
+            </div>
+          `;
+        } else {
+          badgeHtml = `
+            <div class="voice-color-badge" style="background: ${item.badgeGradient || item.color}; box-shadow: 0 0 10px ${item.color}88;">
+              <span style="color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.7); font-size: 1.15rem; font-weight: 900;">★</span>
+            </div>
+          `;
+        }
+      } else if (this.voiceStudioMode === 'dice') {
+        badgeHtml = `
+          <div class="voice-color-badge" style="background: linear-gradient(135deg, #333344, #1E1E28); border-color: #FFE082;">
+            <span style="color: #FFFFFF; font-size: 1.1rem; font-weight: 900;">${item.dicePips}</span>
+          </div>
+        `;
+      } else if (this.voiceStudioMode === 'animals') {
+        badgeHtml = `
+          <div class="voice-color-badge" style="background: rgba(255,255,255,0.1); border-color: ${item.color};">
+            <span style="font-size: 1.3rem;">${item.emoji}</span>
+          </div>
+        `;
+      }
+
       row.innerHTML = `
         <div class="record-row-info">
-          <span>${item.emoji || (item.dicePips ? '🎲' : '⭐')}</span>
-          <span>${item.name}</span>
+          ${badgeHtml}
+          <div class="voice-item-text">
+            <div class="voice-item-title" style="color: ${item.textColor || '#FFFFFF'};">
+              ${item.name}
+            </div>
+            <div class="voice-item-meta">
+              <span class="voice-pos-tag">${posLabel}</span>
+              <span class="voice-sub-desc">${item.sub}</span>
+            </div>
+          </div>
         </div>
         <div class="record-row-btns">
           <button class="btn-record" data-key="${item.audioKey}">🔴 Spela in</button>

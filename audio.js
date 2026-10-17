@@ -418,6 +418,48 @@ class SoundFX {
       }, delay);
     }
   }
+
+  // Announces whose turn it is: first checks if custom recording exists, else speaks in Swedish
+  speakPlayerTurn(player) {
+    if (!this.soundEnabled || !this.voiceEnabled) return;
+    if (!player) return;
+
+    const key = `player_turn_${player.id}`;
+    // 1. Play custom recording if available
+    if (this.playCustomAudio(key)) {
+      return;
+    }
+
+    // 2. Synthesize Swedish speech
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const possessive = this.getPossessive(player.name);
+      const textToSpeak = `${possessive} att snurra!`;
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.lang = 'sv-SE';
+      utterance.rate = 1.05;
+      utterance.pitch = 1.15;
+
+      const voices = window.speechSynthesis.getVoices();
+      const svVoice = voices.find((v) => v.lang.startsWith('sv'));
+      if (svVoice) {
+        utterance.voice = svVoice;
+      }
+      setTimeout(() => {
+        window.speechSynthesis.speak(utterance);
+      }, 60);
+    }
+  }
+
+  getPossessive(name) {
+    if (!name) return '';
+    const clean = name.trim();
+    const last = clean.slice(-1).toLowerCase();
+    if (last === 's' || last === 'x' || last === 'z') {
+      return `${clean} tur`;
+    }
+    return `${clean}s tur`;
+  }
 }
 
 window.soundFX = new SoundFX();

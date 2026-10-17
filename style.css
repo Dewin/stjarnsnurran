@@ -955,6 +955,72 @@ body {
   background: rgba(244, 67, 54, 0.3);
 }
 
+/* Player Voice Actions */
+.player-voice-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-player-rec {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 4px 7px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.btn-player-rec:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #FFD600;
+}
+
+.btn-player-rec.has-recording {
+  background: rgba(76, 175, 80, 0.25);
+  border-color: #4CAF50;
+  color: #A5D6A7;
+}
+
+.btn-player-rec.recording {
+  background: #C62828 !important;
+  color: #FFFFFF !important;
+  border-color: #FF1744 !important;
+  animation: recPulse 0.8s infinite alternate;
+}
+
+.btn-player-play,
+.btn-player-del {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 4px 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-player-play:hover {
+  background: rgba(0, 230, 118, 0.25);
+  border-color: #00E676;
+}
+
+.btn-player-del:hover {
+  background: rgba(255, 23, 68, 0.25);
+  border-color: #FF1744;
+}
+
+@keyframes recPulse {
+  0% { transform: scale(1); box-shadow: 0 0 4px #FF1744; }
+  100% { transform: scale(1.08); box-shadow: 0 0 12px #FF1744; }
+}
+
 .player-modal-actions {
   display: flex;
   flex-direction: column;

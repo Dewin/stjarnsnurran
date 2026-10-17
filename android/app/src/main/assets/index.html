@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   
-  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
 
@@ -721,7 +721,14 @@ C 402 128, 365 152, 320 152 Z"
       </div>
 
       <div style="font-size: 0.85rem; font-weight: 700; text-align: left; margin: 14px 0 4px 0; color: #FFE082;">
-        ⭐ Stjärnor & Resultat:
+        👥 Spelarturer (Vems tur är det?):
+      </div>
+      <div id="voice-players-container">
+        <!-- Dynamically rendered rows for each player -->
+      </div>
+
+      <div id="voice-mode-header" style="font-size: 0.85rem; font-weight: 700; text-align: left; margin: 14px 0 4px 0; color: #FFE082;">
+        ⭐ Spelresultat:
       </div>
       <div id="voice-items-container">
         <!-- Dynamically rendered rows for current mode -->
@@ -770,7 +777,7 @@ C 402 128, 365 152, 320 152 Z"
         </button>
       </div>
       <div class="app-version-badge" style="text-align: center; font-size: 0.72rem; color: #888899; margin-top: 14px;">
-        Stjärnsnurran v2.3 • Personlig Historik
+        Stjärnsnurran v2.4 • Spelarröster & Synk
       </div>
       <div style="text-align: center; margin-top: 6px;">
         <button id="btn-modal-refresh" type="button" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); color: #B0B0C0; font-size: 0.72rem; border-radius: 6px; padding: 4px 10px; cursor: pointer;">
@@ -809,13 +816,13 @@ C 402 128, 365 152, 320 152 Z"
 
   <!-- Cache Version Auto-Check -->
   <script>
-    const APP_VERSION = 'v2.3';
+    const APP_VERSION = 'v2.4';
     if (localStorage.getItem('stjarnsnurran_installed_ver') !== APP_VERSION) {
       localStorage.setItem('stjarnsnurran_installed_ver', APP_VERSION);
       if ('caches' in window) {
         caches.keys().then(keys => {
           keys.forEach(k => {
-            if (k !== 'stjarnsnurran-v13') caches.delete(k);
+            if (k !== 'stjarnsnurran-v14') caches.delete(k);
           });
         });
       }
@@ -823,15 +830,15 @@ C 402 128, 365 152, 320 152 Z"
   </script>
 
   <!-- Scripts -->
-  <script src="confetti.js?v=13"></script>
-  <script src="audio.js?v=13"></script>
-  <script src="app.js?v=13"></script>
+  <script src="confetti.js?v=14"></script>
+  <script src="audio.js?v=14"></script>
+  <script src="app.js?v=14"></script>
 
   <!-- Service Worker Registration with Aggressive Auto-Update -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=13').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=14').then((reg) => {
           // Immediately check for SW script changes
           reg.update();
 

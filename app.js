@@ -282,6 +282,9 @@ class StarSpinner {
     this.modalVoice = document.getElementById('modal-voice');
     this.btnCloseVoice = document.getElementById('btn-close-voice');
     this.voiceItemsContainer = document.getElementById('voice-items-container');
+    this.voicePlayersContainer = document.getElementById('voice-players-container');
+    this.voiceModeHeader = document.getElementById('voice-mode-header');
+    this.currentRecorder = null;
 
     this.modalPlayers = document.getElementById('modal-players');
     this.btnClosePlayers = document.getElementById('btn-close-players');
@@ -522,17 +525,20 @@ class StarSpinner {
 
   setMode(modeId) {
     if (!GAME_MODES[modeId] || this.isSpinning) return;
-    this.activeMode = modeId;
-
-    document.querySelectorAll('.mode-pill').forEach((pill) => {
-      pill.classList.toggle('active', pill.dataset.mode === modeId);
-    });
-
     this.updateMode(modeId);
     this.saveState();
   }
 
   updateMode(modeId) {
+    if (!GAME_MODES[modeId]) return;
+    this.activeMode = modeId;
+
+    // 1. Sync navigation mode pills
+    document.querySelectorAll('.mode-pill').forEach((pill) => {
+      pill.classList.toggle('active', pill.dataset.mode === modeId);
+    });
+
+    // 2. Toggle SVG slot graphics for each star position
     for (let i = 0; i < 6; i++) {
       const star = this.starElements[i];
       if (star) {
@@ -545,20 +551,33 @@ class StarSpinner {
       }
     }
 
-    // Refresh LED state for newly active mode
+    // 3. Refresh LED state for newly active mode
     this.clearAllLeds();
     if (this.currentLedIndex >= 0) {
       this.setLed(this.currentLedIndex, true);
     }
 
-    // Update Result Card initial text for mode
-    this.resultTitle.textContent = 'Tryck på Ian för att snurra!';
-    if (modeId === 'dice') {
-      this.resultSub.textContent = 'Vilken siffra slår du?';
-    } else if (modeId === 'animals') {
-      this.resultSub.textContent = 'Vilket djur får du?';
-    } else {
-      this.resultSub.textContent = 'Vilken stjärnfärg blir det?';
+    // 4. Update Result Card initial badge & text for mode (if not currently spinning)
+    if (!this.isSpinning) {
+      if (modeId === 'dice') {
+        this.resultBadge.textContent = '🎲';
+        this.resultSub.textContent = 'Vilken siffra slår du?';
+      } else if (modeId === 'animals') {
+        this.resultBadge.textContent = '🦁';
+        this.resultSub.textContent = 'Vilket djur får du?';
+      } else {
+        this.resultBadge.textContent = '⭐';
+        this.resultSub.textContent = 'Vilken stjärnfärg blir det?';
+      }
+      this.resultBadge.style.background = '#333344';
+      this.resultBadge.classList.remove('active-badge');
+
+      if (this.playerModeEnabled && this.players.length > 0) {
+        const player = this.players[this.currentPlayerIdx];
+        this.resultTitle.textContent = `${player.avatar} ${player.name}s tur!`;
+      } else {
+        this.resultTitle.textContent = 'Tryck på Ian för att snurra!';
+      }
     }
   }
 
@@ -782,6 +801,15 @@ class StarSpinner {
   advancePlayer() {
     this.currentPlayerIdx = (this.currentPlayerIdx + 1) % this.players.length;
     this.updatePlayerBanner();
+    this.speakCurrentPlayerTurn();
+  }
+
+  speakCurrentPlayerTurn() {
+    if (!this.playerModeEnabled || !this.players || this.players.length === 0) return;
+    const player = this.players[this.currentPlayerIdx];
+    if (player && window.soundFX) {
+      window.soundFX.speakPlayerTurn(player);
+    }
   }
 
   openPlayerModal() {
@@ -820,6 +848,10 @@ class StarSpinner {
     this.resultBadge.textContent = starter.avatar;
     this.resultBadge.style.background = starter.color;
     this.resultBadge.classList.add('active-badge');
+
+    setTimeout(() => {
+      this.speakCurrentPlayerTurn();
+    }, 350);
   }
 
   stopPlayerMode() {
@@ -874,12 +906,17 @@ class StarSpinner {
     this.renderPlayerList();
     this.updatePlayerBanner();
     this.saveState();
+    if (this.playerModeEnabled) {
+      this.speakCurrentPlayerTurn();
+    }
   }
 
   renderPlayerList() {
     this.playerListContainer.innerHTML = '';
     this.players.forEach((p, idx) => {
       const isStarter = idx === 0;
+      const key = `player_turn_${p.id}`;
+      const hasRec = window.soundFX && window.soundFX.hasCustomRecording(key);
       const row = document.createElement('div');
       row.className = 'player-item' + (isStarter ? ' is-start-player' : '');
       row.innerHTML = `
@@ -893,10 +930,17 @@ class StarSpinner {
           ${p.history && p.history.length > 0 ? `<span class="player-list-last-roll" title="${p.name}s senaste snurr">Senast: ${p.history[0].name}</span>` : ''}
           ${isStarter ? '<span class="tag-start-player">👑 Startar först!</span>' : '<span class="tag-set-starter">Klicka för att starta</span>'}
         </div>
+        <div class="player-voice-actions">
+          <button class="btn-player-rec ${hasRec ? 'has-recording' : ''}" data-idx="${idx}" type="button" title="${hasRec ? 'Byt inspelad röst för ' + p.name : 'Spela in röst för när det är ' + p.name + 's tur'}">
+            ${hasRec ? '🎙️✓' : '🎙️'}
+          </button>
+          ${hasRec ? `<button class="btn-player-play" data-idx="${idx}" type="button" title="Lyssna på ${p.name}s röst">▶️</button>` : ''}
+          ${hasRec ? `<button class="btn-player-del" data-idx="${idx}" type="button" title="Ta bort inspelad röst för ${p.name}">🗑️</button>` : ''}
+        </div>
         <div class="player-reorder-btns">
           <button class="btn-move-player" data-idx="${idx}" data-dir="-1" type="button" title="Flytta upp" ${idx === 0 ? 'disabled' : ''}>⬆️</button>
           <button class="btn-move-player" data-idx="${idx}" data-dir="1" type="button" title="Flytta ner" ${idx === this.players.length - 1 ? 'disabled' : ''}>⬇️</button>
-          ${this.players.length > 1 ? `<button class="btn-del-player" data-idx="${idx}" type="button" title="Ta bort">🗑️</button>` : ''}
+          ${this.players.length > 1 ? `<button class="btn-del-player" data-idx="${idx}" type="button" title="Ta bort">❌</button>` : ''}
         </div>
       `;
 
@@ -917,6 +961,57 @@ class StarSpinner {
         });
       }
 
+      // Voice record button
+      const voiceRecBtn = row.querySelector('.btn-player-rec');
+      if (voiceRecBtn) {
+        voiceRecBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (this.currentRecorder && this.currentRecorder.state === 'recording') {
+            this.currentRecorder.stop();
+            return;
+          }
+          await this.recordVoice(
+            key,
+            () => {
+              voiceRecBtn.classList.add('recording');
+              voiceRecBtn.textContent = '⏹️';
+              this.vibrate(25);
+            },
+            (saved) => {
+              voiceRecBtn.classList.remove('recording');
+              this.renderPlayerList();
+              if (this.modalVoice && this.modalVoice.classList.contains('open')) {
+                this.renderVoiceItems();
+              }
+              this.vibrate([20, 30]);
+            }
+          );
+        });
+      }
+
+      // Voice play button
+      const voicePlayBtn = row.querySelector('.btn-player-play');
+      if (voicePlayBtn) {
+        voicePlayBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (window.soundFX) window.soundFX.playCustomAudio(key);
+        });
+      }
+
+      // Voice delete button
+      const voiceDelBtn = row.querySelector('.btn-player-del');
+      if (voiceDelBtn) {
+        voiceDelBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (window.soundFX) window.soundFX.deleteCustomRecording(key);
+          this.renderPlayerList();
+          if (this.modalVoice && this.modalVoice.classList.contains('open')) {
+            this.renderVoiceItems();
+          }
+          this.vibrate(15);
+        });
+      }
+
       // Move up/down buttons
       const moveBtns = row.querySelectorAll('.btn-move-player');
       moveBtns.forEach((btn) => {
@@ -932,7 +1027,10 @@ class StarSpinner {
       if (delBtn) {
         delBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          this.players.splice(idx, 1);
+          const [removed] = this.players.splice(idx, 1);
+          if (removed && window.soundFX) {
+            window.soundFX.deleteCustomRecording(`player_turn_${removed.id}`);
+          }
           if (this.currentPlayerIdx >= this.players.length) this.currentPlayerIdx = 0;
           this.renderPlayerList();
           this.updatePlayerBanner();
@@ -1042,11 +1140,87 @@ class StarSpinner {
     this.modalVoice.classList.remove('open');
   }
 
+  // Voice Recording Helper
+  async recordVoice(key, onStart, onStop) {
+    if (this.currentRecorder && this.currentRecorder.state === 'recording') {
+      try {
+        this.currentRecorder.stop();
+      } catch (e) {}
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      this.currentRecorder = mediaRecorder;
+      const audioChunks = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64Data = reader.result;
+          if (window.soundFX) window.soundFX.saveCustomRecording(key, base64Data);
+          if (onStop) onStop(true);
+        };
+        reader.readAsDataURL(blob);
+
+        stream.getTracks().forEach((track) => track.stop());
+        this.currentRecorder = null;
+      };
+
+      mediaRecorder.start();
+      if (onStart) onStart();
+
+      // Auto stop after 3.5s
+      setTimeout(() => {
+        if (this.currentRecorder && this.currentRecorder === mediaRecorder && mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+        }
+      }, 3500);
+    } catch (err) {
+      alert('Kunde inte få tillgång till mikrofonen. Kontrollera behörigheter i webbläsaren.');
+      if (onStop) onStop(false);
+    }
+  }
+
   renderVoiceItems() {
-    // Ian click row setup
+    // 1. Ian click row setup
     this.setupRecordRow('ian_click', document.getElementById('row-rec-ian'));
 
-    // Dynamic rows for current mode
+    // 2. Player turn voice recordings
+    if (this.voicePlayersContainer) {
+      this.voicePlayersContainer.innerHTML = '';
+      this.players.forEach((p) => {
+        const pKey = `player_turn_${p.id}`;
+        const row = document.createElement('div');
+        row.className = 'record-row';
+        const possessive = window.soundFX ? window.soundFX.getPossessive(p.name) : `${p.name}s tur`;
+        row.innerHTML = `
+          <div class="record-row-info">
+            <span>${p.avatar}</span>
+            <span>${p.name} ("${possessive}")</span>
+          </div>
+          <div class="record-row-btns">
+            <button class="btn-record" data-key="${pKey}">🔴 Spela in</button>
+            <button class="btn-play-rec" data-key="${pKey}" style="display: none;">▶️</button>
+            <button class="btn-del-rec" data-key="${pKey}" style="display: none;">🗑️</button>
+          </div>
+        `;
+        this.setupRecordRow(pKey, row, () => this.renderPlayerList());
+        this.voicePlayersContainer.appendChild(row);
+      });
+    }
+
+    // 3. Dynamic rows for current mode
+    if (this.voiceModeHeader) {
+      this.voiceModeHeader.textContent = `⭐ ${GAME_MODES[this.activeMode].name} & Resultat:`;
+    }
+
     this.voiceItemsContainer.innerHTML = '';
     const items = this.currentItems;
 
@@ -1069,7 +1243,7 @@ class StarSpinner {
     });
   }
 
-  setupRecordRow(key, container) {
+  setupRecordRow(key, container, onUpdate = null) {
     const btnRec = container.querySelector(`.btn-record[data-key="${key}"]`);
     const btnPlay = container.querySelector(`.btn-play-rec[data-key="${key}"]`);
     const btnDel = container.querySelector(`.btn-del-rec[data-key="${key}"]`);
@@ -1093,59 +1267,29 @@ class StarSpinner {
       btnDel.addEventListener('click', () => {
         if (window.soundFX) window.soundFX.deleteCustomRecording(key);
         updateBtns();
+        if (onUpdate) onUpdate();
       });
     }
 
-    let mediaRecorder = null;
-    let audioChunks = [];
-
     if (btnRec) {
       btnRec.addEventListener('click', async () => {
-        if (mediaRecorder && mediaRecorder.state === 'recording') {
-          // Stop recording
-          mediaRecorder.stop();
-          btnRec.classList.remove('recording');
-          btnRec.textContent = 'Sparar...';
+        if (this.currentRecorder && this.currentRecorder.state === 'recording') {
+          this.currentRecorder.stop();
           return;
         }
 
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
-          audioChunks = [];
-
-          mediaRecorder.ondataavailable = (e) => {
-            if (e.data.size > 0) audioChunks.push(e.data);
-          };
-
-          mediaRecorder.onstop = () => {
-            const blob = new Blob(audioChunks, { type: 'audio/webm' });
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              const base64Data = reader.result;
-              if (window.soundFX) window.soundFX.saveCustomRecording(key, base64Data);
-              updateBtns();
-            };
-            reader.readAsDataURL(blob);
-
-            // Stop mic tracks
-            stream.getTracks().forEach((track) => track.stop());
-          };
-
-          mediaRecorder.start();
-          btnRec.classList.add('recording');
-          btnRec.textContent = '⏹️ Stoppa';
-
-          // Auto stop after 3.5s
-          setTimeout(() => {
-            if (mediaRecorder && mediaRecorder.state === 'recording') {
-              mediaRecorder.stop();
-              btnRec.classList.remove('recording');
-            }
-          }, 3500);
-        } catch (err) {
-          alert('Kunde inte få tillgång till mikrofonen. Kontrollera behörigheter i webbläsaren.');
-        }
+        await this.recordVoice(
+          key,
+          () => {
+            btnRec.classList.add('recording');
+            btnRec.textContent = '⏹️ Stoppa';
+          },
+          (saved) => {
+            btnRec.classList.remove('recording');
+            updateBtns();
+            if (onUpdate) onUpdate();
+          }
+        );
       });
     }
   }
@@ -1220,6 +1364,7 @@ class StarSpinner {
           if (this.currentPlayerIdx !== pIdx && !this.isSpinning) {
             this.currentPlayerIdx = pIdx;
             this.updatePlayerBanner();
+            this.speakCurrentPlayerTurn();
             this.vibrate(15);
             if (window.soundFX) window.soundFX.playUiClick();
           }

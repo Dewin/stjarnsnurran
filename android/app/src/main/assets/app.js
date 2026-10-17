@@ -278,7 +278,6 @@ class StarSpinner {
     // Player UI
     this.playerBanner = document.getElementById('player-banner');
     this.currentPlayerAvatar = document.getElementById('current-player-avatar');
-    this.currentPlayerAvatarBtn = document.getElementById('current-player-avatar-btn');
     this.currentPlayerText = document.getElementById('current-player-text');
     this.btnOpenPlayerSettings = document.getElementById('btn-open-player-settings');
 
@@ -423,14 +422,6 @@ class StarSpinner {
 
     if (this.btnSelectNewAvatar) {
       this.btnSelectNewAvatar.addEventListener('click', () => this.openEmojiPicker(null));
-    }
-
-    if (this.currentPlayerAvatarBtn) {
-      this.currentPlayerAvatarBtn.addEventListener('click', () => {
-        if (this.playerModeEnabled && this.players.length > 0) {
-          this.openEmojiPicker(this.currentPlayerIdx);
-        }
-      });
     }
 
     if (this.btnCloseEmoji) {

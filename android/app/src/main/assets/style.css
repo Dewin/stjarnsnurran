@@ -520,8 +520,8 @@ body {
 }
 
 .history-dot {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: 1.5px solid #FFFFFF;
   box-shadow: 0 1px 3px rgba(0,0,0,0.5);
@@ -530,14 +530,92 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
-  font-weight: 800;
+  font-size: 0.72rem;
+  font-weight: 900;
   color: #FFFFFF;
+  line-height: 1;
 }
 
 @keyframes fadeInDot {
   from { opacity: 0; transform: scale(0.4); }
   to { opacity: 1; transform: scale(1); }
+}
+
+/* Player History Cards in Footer */
+.player-history-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 3px 8px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+}
+
+.player-history-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.player-history-card.active-turn {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 214, 0, 0.16));
+  border: 1.5px solid var(--p-color, #FFD600);
+  box-shadow: 0 0 10px rgba(255, 214, 0, 0.35);
+  transform: translateY(-1px);
+}
+
+.player-history-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.player-history-avatar {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.player-history-name {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  white-space: nowrap;
+}
+
+.player-turn-tag {
+  background: var(--p-color, #FFD600);
+  color: #1A1A24;
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  padding: 1px 4px;
+  border-radius: 6px;
+  margin-left: 2px;
+  line-height: 1.2;
+}
+
+.player-history-outcomes {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 2px;
+}
+
+.player-history-empty {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+  padding: 0 4px;
+}
+
+.player-turn-last-roll {
+  font-size: 0.76rem;
+  opacity: 0.85;
+  margin-left: 6px;
+  font-weight: 500;
 }
 
 /* Modals */
@@ -722,9 +800,20 @@ body {
 .player-order-controls {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin: 6px 0 10px 0;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+.player-list-last-roll {
+  display: inline-block;
+  font-size: 0.72rem;
+  color: #FFE082;
+  background: rgba(255, 214, 0, 0.12);
+  padding: 1px 6px;
+  border-radius: 6px;
+  margin-left: 6px;
 }
 
 .btn-order-action {

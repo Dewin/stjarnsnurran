@@ -241,9 +241,9 @@ class StarSpinner {
     // Player mode state
     this.playerModeEnabled = false;
     this.players = [
-      { id: 1, name: 'Ian', avatar: '👦', color: '#FFD600' },
-      { id: 2, name: 'Mamma', avatar: '👩', color: '#FF4081' },
-      { id: 3, name: 'Pappa', avatar: '👨', color: '#00B0FF' }
+      { id: 1, name: 'Ian', avatar: '👦', color: '#FFD600', history: [] },
+      { id: 2, name: 'Mamma', avatar: '👩', color: '#FF4081', history: [] },
+      { id: 3, name: 'Pappa', avatar: '👨', color: '#00B0FF', history: [] }
     ];
     this.currentPlayerIdx = 0;
     this.selectedNewPlayerAvatar = '👦';
@@ -291,6 +291,7 @@ class StarSpinner {
     this.btnSelectNewAvatar = document.getElementById('btn-select-new-avatar');
     this.newPlayerAvatarPreview = document.getElementById('new-player-avatar-preview');
     this.btnShufflePlayers = document.getElementById('btn-shuffle-players');
+    this.btnResetHistory = document.getElementById('btn-reset-history');
     this.btnStartPlayerMode = document.getElementById('btn-start-player-mode');
     this.btnStopPlayerMode = document.getElementById('btn-stop-player-mode');
     this.btnModalRefresh = document.getElementById('btn-modal-refresh');
@@ -319,6 +320,7 @@ class StarSpinner {
     this.loadState();
     this.updateMode(this.activeMode);
     this.updatePlayerBanner();
+    this.renderHistory();
   }
 
   get currentItems() {
@@ -407,6 +409,14 @@ class StarSpinner {
 
     if (this.btnShufflePlayers) {
       this.btnShufflePlayers.addEventListener('click', () => this.shufflePlayers());
+    }
+
+    if (this.btnResetHistory) {
+      this.btnResetHistory.addEventListener('click', () => {
+        if (confirm('Vill du nollställa alla spelares historik för en ny spelomgång?')) {
+          this.resetHistory();
+        }
+      });
     }
 
     if (this.btnStartPlayerMode) {
@@ -720,7 +730,7 @@ class StarSpinner {
 
     // Update Result Card
     const currentPlayer = this.playerModeEnabled ? this.players[this.currentPlayerIdx] : null;
-    this.resultBadge.textContent = winnerData.emoji || (winnerData.dicePips ? '🎲' : '⭐');
+    this.resultBadge.textContent = this.getOutcomeSymbol(winnerData, true);
     this.resultBadge.style.background = winnerData.badgeGradient;
     this.resultBadge.classList.add('active-badge');
 
@@ -756,9 +766,17 @@ class StarSpinner {
     }
     this.playerBanner.style.display = 'flex';
     const player = this.players[this.currentPlayerIdx];
+    if (!player) return;
     this.currentPlayerAvatar.textContent = player.avatar;
-    this.currentPlayerText.textContent = `${player.name}s tur att snurra!`;
+
+    const lastRoll = (player.history && player.history.length > 0) ? player.history[0] : null;
+    if (lastRoll) {
+      this.currentPlayerText.innerHTML = `${player.name}s tur att snurra! <span class="player-turn-last-roll" title="${player.name}s förra resultat">(Senast: ${lastRoll.name})</span>`;
+    } else {
+      this.currentPlayerText.textContent = `${player.name}s tur att snurra!`;
+    }
     this.playerBanner.style.setProperty('--player-color', player.color);
+    this.renderHistory();
   }
 
   advancePlayer() {
@@ -872,6 +890,7 @@ class StarSpinner {
         </button>
         <div class="player-details" data-idx="${idx}" title="Klicka för att sätta som startspelare">
           <span class="player-name">${p.name}</span>
+          ${p.history && p.history.length > 0 ? `<span class="player-list-last-roll" title="${p.name}s senaste snurr">Senast: ${p.history[0].name}</span>` : ''}
           ${isStarter ? '<span class="tag-start-player">👑 Startar först!</span>' : '<span class="tag-set-starter">Klicka för att starta</span>'}
         </div>
         <div class="player-reorder-btns">
@@ -917,6 +936,7 @@ class StarSpinner {
           if (this.currentPlayerIdx >= this.players.length) this.currentPlayerIdx = 0;
           this.renderPlayerList();
           this.updatePlayerBanner();
+          this.renderHistory();
           this.saveState();
         });
       }
@@ -935,7 +955,8 @@ class StarSpinner {
       id: Date.now(),
       name: name,
       avatar: this.selectedNewPlayerAvatar || '👦',
-      color: randomColor
+      color: randomColor,
+      history: []
     });
 
     this.inputNewPlayer.value = '';
@@ -1130,30 +1151,134 @@ class StarSpinner {
   }
 
   // History & Storage
+  resetHistory() {
+    this.history = [];
+    this.players.forEach((p) => { p.history = []; });
+    this.saveState();
+    this.renderHistory();
+    this.updatePlayerBanner();
+    this.renderPlayerList();
+    this.vibrate([20, 20]);
+    if (window.soundFX) window.soundFX.playUiClick();
+  }
+
+  getOutcomeSymbol(winner, isLargeBadge = false) {
+    if (!winner) return '⭐';
+    if (winner.emoji) return winner.emoji; // Animals: 🐶, 🐱, 🐮, 🦁, 🐸, 🐵
+    if (winner.dicePips) {
+      const diceIcons = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+      return isLargeBadge ? (diceIcons[winner.dicePips - 1] || `${winner.dicePips}`) : `${winner.dicePips}`;
+    }
+    if (winner.index === 0) return '🌈';
+    return '⭐';
+  }
+
   addToHistory(winner, player = null) {
     this.history.unshift({
       winner: winner,
-      player: player,
+      player: player ? { id: player.id, name: player.name, avatar: player.avatar } : null,
       time: Date.now()
     });
-    if (this.history.length > 8) this.history.pop();
+    if (this.history.length > 20) this.history.pop();
+
+    if (player) {
+      if (!Array.isArray(player.history)) player.history = [];
+      player.history.unshift({
+        name: winner.name,
+        color: winner.color,
+        badgeGradient: winner.badgeGradient,
+        dicePips: winner.dicePips,
+        emoji: winner.emoji,
+        index: winner.index,
+        time: Date.now()
+      });
+      if (player.history.length > 8) player.history.pop();
+    }
+
     this.renderHistory();
     this.saveState();
   }
 
   renderHistory() {
+    if (!this.historyItems) return;
+
+    if (this.playerModeEnabled) {
+      if (!this.players || this.players.length === 0) {
+        this.historyItems.innerHTML = '<span style="font-size: 0.75rem; color: var(--text-dim);">Inga spelare</span>';
+        return;
+      }
+
+      this.historyItems.innerHTML = '';
+      this.players.forEach((p, pIdx) => {
+        const isCurrentTurn = pIdx === this.currentPlayerIdx;
+        const card = document.createElement('div');
+        card.className = `player-history-card ${isCurrentTurn ? 'active-turn' : ''}`;
+        card.style.setProperty('--p-color', p.color || '#FFD600');
+        card.title = `${p.name} (${isCurrentTurn ? 'Har turen nu!' : 'Klicka för att välja'})`;
+
+        card.addEventListener('click', () => {
+          if (this.currentPlayerIdx !== pIdx && !this.isSpinning) {
+            this.currentPlayerIdx = pIdx;
+            this.updatePlayerBanner();
+            this.vibrate(15);
+            if (window.soundFX) window.soundFX.playUiClick();
+          }
+        });
+
+        const header = document.createElement('div');
+        header.className = 'player-history-header';
+        header.innerHTML = `
+          <span class="player-history-avatar">${p.avatar}</span>
+          <span class="player-history-name">${p.name}:</span>
+          ${isCurrentTurn ? '<span class="player-turn-tag">Nu</span>' : ''}
+        `;
+        card.appendChild(header);
+
+        const outcomes = document.createElement('div');
+        outcomes.className = 'player-history-outcomes';
+
+        const pHistory = Array.isArray(p.history) ? p.history : [];
+        if (pHistory.length === 0) {
+          const empty = document.createElement('span');
+          empty.className = 'player-history-empty';
+          empty.textContent = '–';
+          empty.title = `${p.name} har inte snurrat än`;
+          outcomes.appendChild(empty);
+        } else {
+          // Show up to 5 most recent spins for this player
+          pHistory.slice(0, 5).forEach((item) => {
+            const dot = document.createElement('div');
+            dot.className = 'history-dot';
+            dot.style.background = item.badgeGradient || item.color;
+            const isLightBg = item.color === '#FFEA00' || item.color === '#FFD600' || item.color === '#FFD54F';
+            dot.style.color = isLightBg ? '#1A1A24' : '#FFFFFF';
+            dot.title = `${p.name}: ${item.name}`;
+            dot.textContent = this.getOutcomeSymbol(item, false);
+            outcomes.appendChild(dot);
+          });
+        }
+
+        card.appendChild(outcomes);
+        this.historyItems.appendChild(card);
+      });
+      return;
+    }
+
+    // Default Single Player Mode
     if (this.history.length === 0) {
       this.historyItems.innerHTML = '<span style="font-size: 0.75rem; color: var(--text-dim);">Inga snurr än</span>';
       return;
     }
 
     this.historyItems.innerHTML = '';
-    this.history.forEach((item) => {
+    this.history.slice(0, 8).forEach((item) => {
       const dot = document.createElement('div');
       dot.className = 'history-dot';
-      dot.style.background = item.winner.badgeGradient;
-      dot.title = item.player ? `${item.player.avatar || ''} ${item.player.name}: ${item.winner.name}` : item.winner.name;
-      dot.textContent = item.player ? (item.player.avatar || item.player.name[0]) : (item.winner.emoji || (item.winner.dicePips ? '🎲' : '⭐'));
+      dot.style.background = item.winner.badgeGradient || item.winner.color;
+      const isLightBg = item.winner.color === '#FFEA00' || item.winner.color === '#FFD600' || item.winner.color === '#FFD54F';
+      dot.style.color = isLightBg ? '#1A1A24' : '#FFFFFF';
+      dot.title = item.winner.name;
+      dot.textContent = this.getOutcomeSymbol(item.winner, false);
       this.historyItems.appendChild(dot);
     });
   }
@@ -1178,7 +1303,12 @@ class StarSpinner {
       const pList = localStorage.getItem('stjarn_players');
       if (pList) {
         const parsed = JSON.parse(pList);
-        if (Array.isArray(parsed) && parsed.length > 0) this.players = parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.players = parsed.map((p) => ({
+            ...p,
+            history: Array.isArray(p.history) ? p.history : []
+          }));
+        }
       }
     } catch (e) {}
   }

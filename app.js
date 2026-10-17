@@ -4,57 +4,57 @@
 const STARS_DATA = [
   {
     index: 0,
-    name: "Regnbåge!",
-    speech: "Regnbåge! Välj valfri färg!",
-    sub: "Joker – Välj vilken färg du vill!",
+    name: "Regnbågsstjärna!",
+    speech: "Regnbågsstjärna!",
+    sub: "Alla färgers stjärna!",
     color: "#E040FB",
-    badgeGradient: "linear-gradient(135deg, #9D65A0, #F5C518, #20637A, #D96144, #2E7D32)",
-    textColor: "#FF80AB"
+    badgeGradient: "linear-gradient(135deg, #BA68C8, #FFEA00, #00B0FF, #FF6D00, #00E676)",
+    textColor: "#FF4081"
   },
   {
     index: 1,
     name: "Gul stjärna!",
-    speech: "Gult!",
+    speech: "Gul stjärna!",
     sub: "Solig och varm som honung!",
-    color: "#F5C518",
-    badgeGradient: "#F5C518",
-    textColor: "#F5C518"
+    color: "#FFEA00",
+    badgeGradient: "#FFEA00",
+    textColor: "#FFD600"
   },
   {
     index: 2,
     name: "Blå stjärna!",
-    speech: "Blått!",
+    speech: "Blå stjärna!",
     sub: "Djupblå som stjärnhimlen!",
-    color: "#20637A",
-    badgeGradient: "#20637A",
-    textColor: "#4FC3F7"
+    color: "#00B0FF",
+    badgeGradient: "#00B0FF",
+    textColor: "#40C4FF"
   },
   {
     index: 3,
     name: "Orange stjärna!",
-    speech: "Orange!",
+    speech: "Orange stjärna!",
     sub: "Pigg och glad som en apelsin!",
-    color: "#D96144",
-    badgeGradient: "#D96144",
-    textColor: "#FF8A65"
+    color: "#FF6D00",
+    badgeGradient: "#FF6D00",
+    textColor: "#FF9E80"
   },
   {
     index: 4,
     name: "Grön stjärna!",
-    speech: "Grönt!",
+    speech: "Grön stjärna!",
     sub: "Skön som sommargräset!",
-    color: "#2E7D32",
-    badgeGradient: "#2E7D32",
-    textColor: "#81C784"
+    color: "#00E676",
+    badgeGradient: "#00E676",
+    textColor: "#69F0AE"
   },
   {
     index: 5,
     name: "Lila stjärna!",
-    speech: "Lila!",
+    speech: "Lila stjärna!",
     sub: "Kunglig och magisk!",
-    color: "#9D65A0",
-    badgeGradient: "#9D65A0",
-    textColor: "#CE93D8"
+    color: "#BA68C8",
+    badgeGradient: "#BA68C8",
+    textColor: "#EA80FC"
   }
 ];
 
@@ -93,6 +93,12 @@ class StarSpinner {
       const ledAssembly = document.getElementById(`led-${i}`);
       this.ledLayers[i] = ledAssembly.querySelector('.led-active-layer');
     }
+
+    // Ian Avatar elements
+    this.ianAvatar = document.getElementById('ian-avatar');
+    this.ianColorOverlay = document.getElementById('ian-color-overlay');
+    this.ianAura = document.getElementById('ian-aura');
+    this.ianRing = document.getElementById('ian-ring');
 
     this.initEvents();
     this.loadHistory();
@@ -220,6 +226,11 @@ class StarSpinner {
     this.toyContainer.classList.add('spinning');
     this.clearAllLeds();
 
+    // Reset Ian avatar state
+    if (this.ianAvatar) {
+      this.ianAvatar.classList.remove('flashing-win');
+    }
+
     // Haptic initial buzz
     this.vibrate(25);
 
@@ -280,6 +291,26 @@ class StarSpinner {
     this.toyContainer.classList.remove('spinning');
     this.starElements[winningIndex].classList.add('winner');
     this.ledLayers[winningIndex].classList.add('pulsing');
+
+    // Flash Ian's face in the winning color!
+    if (this.ianAvatar) {
+      const flashColor = winnerData.color;
+      if (this.ianColorOverlay) {
+        this.ianColorOverlay.setAttribute('fill', flashColor);
+      }
+      if (this.ianAura) {
+        this.ianAura.setAttribute('fill', flashColor);
+      }
+      if (this.ianRing) {
+        this.ianRing.setAttribute('stroke', winnerData.textColor || flashColor);
+      }
+      this.ianAvatar.classList.remove('flashing-win', 'rainbow-flash');
+      if (winningIndex === 0) {
+        this.ianAvatar.classList.add('rainbow-flash');
+      }
+      void this.ianAvatar.offsetWidth; // trigger reflow
+      this.ianAvatar.classList.add('flashing-win');
+    }
 
     // Winning victory fanfare
     if (window.soundFX) {

@@ -302,6 +302,7 @@ class StarSpinner {
     this.currentPlayerIdx = 0;
     this.selectedNewPlayerAvatar = '👦';
     this.editingPlayerIndex = null;
+    this.playerAdvanceTimeout = null;
 
     // Shake sensor state
     this.shakeEnabled = true;
@@ -735,9 +736,16 @@ class StarSpinner {
     if (this.isSpinning) return;
     this.isSpinning = true;
 
-    // Unlock Web Audio & Play the "Click on Ian" sound (custom recorded voice or tactile click)
+    // Clear any pending player turn announcement timeout
+    if (this.playerAdvanceTimeout) {
+      clearTimeout(this.playerAdvanceTimeout);
+      this.playerAdvanceTimeout = null;
+    }
+
+    // Unlock Web Audio, stop any previous speech, & Play the "Click on Ian" sound
     // Always plays whenever a spin starts, regardless of trigger (center button, quick button, shake, spacebar)
     if (window.soundFX) {
+      window.soundFX.stopAllVoice();
       window.soundFX.init();
       window.soundFX.playButtonPress();
     }
@@ -853,12 +861,32 @@ class StarSpinner {
       });
     }
 
-    // Play victory sound & announcement
+    // Play victory sound & announcement, then advance player sequentially (never overlapping!)
+    const onResultComplete = () => {
+      if (this.playerModeEnabled) {
+        // Natural 700ms pause after result audio finishes before announcing next player's turn
+        this.playerAdvanceTimeout = setTimeout(() => {
+          this.advancePlayer();
+        }, 700);
+      }
+    };
+
     if (window.soundFX) {
       window.soundFX.playWin(winningIndex);
       setTimeout(() => {
-        window.soundFX.speakResult(winnerData.audioKey, winnerData.speech, winnerData.animalType);
+        window.soundFX.speakResult(
+          winnerData.audioKey,
+          winnerData.speech,
+          winnerData.animalType,
+          onResultComplete
+        );
       }, 550);
+    } else {
+      if (this.playerModeEnabled) {
+        this.playerAdvanceTimeout = setTimeout(() => {
+          this.advancePlayer();
+        }, 1500);
+      }
     }
 
     this.vibrate([35, 60, 35, 60, 140]);
@@ -879,13 +907,6 @@ class StarSpinner {
     this.resultTitle.style.color = winnerData.textColor;
 
     this.addToHistory(winnerData, currentPlayer);
-
-    // If player mode is active, advance to next player after 2.5s
-    if (this.playerModeEnabled) {
-      setTimeout(() => {
-        this.advancePlayer();
-      }, 2600);
-    }
 
     // Re-enable
     this.centerButton.classList.remove('disabled');

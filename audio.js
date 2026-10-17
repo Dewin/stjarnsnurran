@@ -7,7 +7,23 @@ class SoundFX {
     this.soundEnabled = true;
     this.voiceEnabled = true;
     this.customRecordings = {}; // Map of key -> dataUrl/blobUrl
+    this.currentAudioElement = null;
     this.loadCustomRecordings();
+  }
+
+  stopAllVoice() {
+    if (this.currentAudioElement) {
+      try {
+        this.currentAudioElement.pause();
+        this.currentAudioElement.currentTime = 0;
+      } catch (e) {}
+      this.currentAudioElement = null;
+    }
+    if ('speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
+    }
   }
 
   init() {
@@ -62,13 +78,45 @@ class SoundFX {
     return !!this.customRecordings[key];
   }
 
-  playCustomAudio(key) {
+  playCustomAudio(key, onEnded = null) {
     if (!this.customRecordings[key]) return false;
     try {
+      this.stopAllVoice();
       const audio = new Audio(this.customRecordings[key]);
-      audio.play().catch(() => {});
+      this.currentAudioElement = audio;
+
+      let finished = false;
+      const done = () => {
+        if (finished) return;
+        finished = true;
+        if (this.currentAudioElement === audio) {
+          this.currentAudioElement = null;
+        }
+        if (typeof onEnded === 'function') {
+          onEnded();
+        }
+      };
+
+      audio.onended = done;
+      audio.onerror = done;
+
+      // Safety timeout in case audio element hangs or fails silently
+      const safetyTimer = setTimeout(done, 8000);
+      audio.addEventListener('ended', () => clearTimeout(safetyTimer));
+      audio.addEventListener('error', () => clearTimeout(safetyTimer));
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          clearTimeout(safetyTimer);
+          done();
+        });
+      }
       return true;
     } catch (e) {
+      if (typeof onEnded === 'function') {
+        onEnded();
+      }
       return false;
     }
   }
@@ -384,11 +432,15 @@ class SoundFX {
   }
 
   // Announces result: first checks if custom recording exists, else speaks in Swedish
-  speakResult(audioKey, textToSpeak, animalType = null) {
-    if (!this.voiceEnabled) return;
+  speakResult(audioKey, textToSpeak, animalType = null, onComplete = null) {
+    if (!this.voiceEnabled) {
+      if (typeof onComplete === 'function') onComplete();
+      return;
+    }
 
     // Check custom audio first
-    if (this.playCustomAudio(audioKey)) {
+    if (this.hasCustomRecording(audioKey)) {
+      this.playCustomAudio(audioKey, onComplete);
       return;
     }
 
@@ -399,7 +451,7 @@ class SoundFX {
 
     // Web Speech API in Swedish
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+      this.stopAllVoice();
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
       utterance.lang = 'sv-SE';
       utterance.rate = 1.05;
@@ -411,28 +463,55 @@ class SoundFX {
         utterance.voice = svVoice;
       }
 
+      let completed = false;
+      const done = () => {
+        if (completed) return;
+        completed = true;
+        if (typeof onComplete === 'function') {
+          onComplete();
+        }
+      };
+
+      utterance.onend = done;
+      utterance.onerror = done;
+
+      // Web Speech API safety timeout (SpeechSynthesis on Chrome/Android can sometimes hang without firing onend)
+      const safetyTimer = setTimeout(done, 4500);
+
       // Small delay if animal sound played first
       const delay = animalType ? 350 : 50;
       setTimeout(() => {
-        window.speechSynthesis.speak(utterance);
+        try {
+          window.speechSynthesis.speak(utterance);
+        } catch (e) {
+          clearTimeout(safetyTimer);
+          done();
+        }
       }, delay);
+    } else {
+      if (typeof onComplete === 'function') {
+        onComplete();
+      }
     }
   }
 
   // Announces whose turn it is: first checks if custom recording exists, else speaks in Swedish
-  speakPlayerTurn(player) {
-    if (!this.soundEnabled || !this.voiceEnabled) return;
-    if (!player) return;
+  speakPlayerTurn(player, onComplete = null) {
+    if (!this.soundEnabled || !this.voiceEnabled || !player) {
+      if (typeof onComplete === 'function') onComplete();
+      return;
+    }
 
     const key = `player_turn_${player.id}`;
     // 1. Play custom recording if available
-    if (this.playCustomAudio(key)) {
+    if (this.hasCustomRecording(key)) {
+      this.playCustomAudio(key, onComplete);
       return;
     }
 
     // 2. Synthesize Swedish speech
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+      this.stopAllVoice();
       const possessive = this.getPossessive(player.name);
       const textToSpeak = `${possessive} att snurra!`;
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
@@ -445,9 +524,33 @@ class SoundFX {
       if (svVoice) {
         utterance.voice = svVoice;
       }
+
+      let completed = false;
+      const done = () => {
+        if (completed) return;
+        completed = true;
+        if (typeof onComplete === 'function') {
+          onComplete();
+        }
+      };
+
+      utterance.onend = done;
+      utterance.onerror = done;
+
+      const safetyTimer = setTimeout(done, 4000);
+
       setTimeout(() => {
-        window.speechSynthesis.speak(utterance);
+        try {
+          window.speechSynthesis.speak(utterance);
+        } catch (e) {
+          clearTimeout(safetyTimer);
+          done();
+        }
       }, 60);
+    } else {
+      if (typeof onComplete === 'function') {
+        onComplete();
+      }
     }
   }
 

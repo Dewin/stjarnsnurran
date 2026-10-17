@@ -329,9 +329,11 @@ class StarSpinner {
   }
 
   initEvents() {
-    // Spin trigger on center button (Ian)
+    // Spin trigger on center button (Ian) and Quick Spin Button
     const handleSpin = (e) => {
       e.preventDefault();
+      if (this.centerButton) this.centerButton.blur();
+      if (this.quickSpinBtn) this.quickSpinBtn.blur();
       if (this.isSpinning) return;
       this.spin();
     };
@@ -343,13 +345,16 @@ class StarSpinner {
 
     // Touch depression on center button
     this.centerButton.addEventListener('pointerdown', () => {
+      if (this.centerButton) this.centerButton.blur();
       if (!this.isSpinning) {
         this.centerButton.classList.add('pressed');
-        if (window.soundFX) window.soundFX.playButtonPress();
       }
     });
 
-    const releaseButton = () => this.centerButton.classList.remove('pressed');
+    const releaseButton = () => {
+      this.centerButton.classList.remove('pressed');
+      if (this.centerButton) this.centerButton.blur();
+    };
     this.centerButton.addEventListener('pointerup', releaseButton);
     this.centerButton.addEventListener('pointercancel', releaseButton);
     this.centerButton.addEventListener('pointerleave', releaseButton);
@@ -588,10 +593,15 @@ class StarSpinner {
     if (this.isSpinning) return;
     this.isSpinning = true;
 
-    // Unlock Web Audio
-    if (window.soundFX) window.soundFX.init();
+    // Unlock Web Audio & Play the "Click on Ian" sound (custom recorded voice or tactile click)
+    // Always plays whenever a spin starts, regardless of trigger (center button, quick button, shake, spacebar)
+    if (window.soundFX) {
+      window.soundFX.init();
+      window.soundFX.playButtonPress();
+    }
 
-    // Reset visual states
+    // Reset visual states & drop focus outlines
+    if (this.centerButton) this.centerButton.blur();
     this.centerButton.classList.add('disabled');
     this.quickSpinBtn.disabled = true;
     this.toyContainer.classList.add('spinning');
@@ -851,7 +861,7 @@ class StarSpinner {
     this.players[index] = this.players[targetIdx];
     this.players[targetIdx] = temp;
     this.currentPlayerIdx = 0;
-    if (window.soundFX) window.soundFX.playButtonPress();
+    if (window.soundFX) window.soundFX.playUiClick();
     this.vibrate(15);
     this.renderPlayerList();
     this.updatePlayerBanner();
@@ -863,7 +873,7 @@ class StarSpinner {
     const [starter] = this.players.splice(index, 1);
     this.players.unshift(starter);
     this.currentPlayerIdx = 0;
-    if (window.soundFX) window.soundFX.playButtonPress();
+    if (window.soundFX) window.soundFX.playUiClick();
     this.vibrate(25);
     this.renderPlayerList();
     this.updatePlayerBanner();
@@ -1205,7 +1215,7 @@ class StarSpinner {
 
   async forceRefreshApp() {
     this.vibrate([30, 50]);
-    if (window.soundFX) window.soundFX.playButtonPress();
+    if (window.soundFX) window.soundFX.playUiClick();
 
     if (this.btnForceRefresh) {
       this.btnForceRefresh.style.transition = 'transform 0.8s ease';

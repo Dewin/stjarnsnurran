@@ -233,10 +233,48 @@ body {
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.55));
 }
 
+.toy-svg,
+.toy-svg * {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
 /* Interactive SVG Elements */
-.center-btn {
+.center-btn,
+#center-button {
+  cursor: pointer;
   transition: transform 0.1s ease-out;
   transform-origin: 320px 315px;
+  outline: none !important;
+  outline-style: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  -webkit-focus-ring-color: transparent !important;
+}
+
+.center-btn:focus,
+.center-btn:focus-visible,
+.center-btn:active,
+#center-button:focus,
+#center-button:focus-visible,
+#center-button:active,
+.center-btn *,
+#center-button * {
+  outline: none !important;
+  outline-style: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  box-shadow: none !important;
+}
+
+.center-btn path,
+.center-btn circle,
+.center-btn image {
+  pointer-events: none;
 }
 
 .center-btn:hover #btn-body {
@@ -246,6 +284,7 @@ body {
 .center-btn:active,
 .center-btn.pressed {
   transform: scale(0.93) translateY(3px);
+  outline: none !important;
 }
 
 .center-btn.disabled {

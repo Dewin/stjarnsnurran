@@ -99,6 +99,30 @@ class SoundFX {
     osc.stop(now + 0.05);
   }
 
+  // Subtle clean UI click for generic modal buttons and controls
+  playUiClick() {
+    if (!this.soundEnabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(480, now);
+    osc.frequency.exponentialRampToValueAtTime(240, now + 0.03);
+
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.035);
+  }
+
   // Dice rattle sound when phone is physically shaken
   playShakeRattle() {
     if (!this.soundEnabled) return;

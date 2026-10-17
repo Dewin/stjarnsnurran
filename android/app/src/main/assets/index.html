@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Stjärnsnurran - Slumpa färg</title>
+  <title>Stjärnsnurran - Slumpa färg, tärning & djur</title>
   
   <!-- PWA & Mobile Meta Tags -->
   <meta name="theme-color" content="#C62828">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Stjärnsnurran">
-  <meta name="description" content="Elektronisk stjärntärning med ljud och ljus för sällskapsspel.">
+  <meta name="description" content="Elektronisk stjärntärning med ljud, ljus, röstinspelning och spelarläge.">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -26,12 +26,30 @@
       <h1>Stjärnsnurran</h1>
     </div>
     <div class="header-controls">
+      <button id="btn-toggle-players" class="icon-btn" title="Spelarläge (Vems tur är det?)" aria-label="Spelarläge">👥</button>
+      <button id="btn-voice-studio" class="icon-btn" title="Spela in egna röster / ljud" aria-label="Röststudio">🎙️</button>
+      <button id="btn-shake" class="icon-btn active" title="Skaka telefonen för att snurra: På/Av" aria-label="Skaka">📳</button>
       <button id="btn-sound" class="icon-btn active" title="Ljud På/Av" aria-label="Ljud På/Av">🔊</button>
-      <button id="btn-voice" class="icon-btn active" title="Tal På/Av (Läs upp färg)" aria-label="Tal På/Av">🗣️</button>
       <button id="btn-fullscreen" class="icon-btn" title="Helskärm" aria-label="Helskärm">⛶</button>
       <button id="btn-qr" class="icon-btn" title="Dela / Öppna på mobil" aria-label="Öppna på mobil">📱</button>
     </div>
   </header>
+
+  <!-- Mode Switcher Bar -->
+  <nav class="mode-bar" aria-label="Välj spelläge">
+    <button class="mode-pill active" data-mode="colors">🌟 Färger</button>
+    <button class="mode-pill" data-mode="dice">🎲 Tärning 1–6</button>
+    <button class="mode-pill" data-mode="animals">🦁 Djur</button>
+  </nav>
+
+  <!-- Player Turn Banner (activated when player mode is ON) -->
+  <div class="player-turn-banner" id="player-banner" style="display: none;">
+    <div class="player-info">
+      <span class="player-avatar" id="current-player-avatar">👦</span>
+      <span class="player-text" id="current-player-text">Ians tur att snurra!</span>
+    </div>
+    <button class="btn-player-settings" id="btn-open-player-settings">Hantera spelare ⚙️</button>
+  </div>
 
   <!-- Install PWA Banner (shown if installable on Android) -->
   <div id="install-banner" class="install-prompt-banner" style="display: none;">
@@ -159,8 +177,8 @@ C 555 255, 585 220, 585 170
 C 585 90, 515 50, 455 85
 C 410 110, 370 135, 320 135 Z" fill="url(#highlightGloss)"/>
 
-        <!-- Inner Gold/Yellow Contour Border -->
-        <path d="M 320 152
+        <!-- Inner Gold/Yellow Contour Border (animated during Disco Jackpot) -->
+        <path id="bear-gold-border" d="M 320 152
 C 275 152, 238 128, 198 106
 C 145 76, 85 110, 85 175
 C 85 218, 110 248, 132 268
@@ -205,7 +223,7 @@ C 402 128, 365 152, 320 152 Z"
           <polygon points="185,340 188,345 194,345 189,349 191,355 185,351 179,355 181,349 176,345 182,345"/>
         </g>
 
-        <!-- The 6 Large Vivid Stars Group -->
+        <!-- The 6 Large Stars Group -->
         <g id="stars-group">
           <!-- Star 0: Regnbågsstjärna -->
           <g id="star-0" class="toy-star" data-index="0">
@@ -216,6 +234,7 @@ C 402 128, 365 152, 320 152 Z"
               <path d="M 320.0 173.0 L 320.0 197.0 L 291.8 211.8 L 297.2 180.4 Z" fill="#FF6D00" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
               <path d="M 320.0 173.0 L 297.2 180.4 L 274.3 158.2 L 305.9 153.6 Z" fill="#00E676" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
             </g>
+            <g id="star-sym-0" class="star-symbol-overlay" style="pointer-events: none;"></g>
             <!-- LED Assembly -->
             <g class="led-assembly" id="led-0">
               <circle cx="320.0" cy="173.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
@@ -233,6 +252,7 @@ C 402 128, 365 152, 320 152 Z"
           <!-- Star 1: Gul stjärna -->
           <g id="star-1" class="toy-star" data-index="1">
             <path class="star-body" d="M 443.0 196.0 L 457.1 224.6 L 488.6 229.2 L 465.8 251.4 L 471.2 282.8 L 443.0 268.0 L 414.8 282.8 L 420.2 251.4 L 397.3 229.2 L 428.9 224.6 Z" fill="#FFEA00" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
+            <g id="star-sym-1" class="star-symbol-overlay" style="pointer-events: none;"></g>
             <!-- LED Assembly -->
             <g class="led-assembly" id="led-1">
               <circle cx="443.0" cy="244.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
@@ -250,6 +270,7 @@ C 402 128, 365 152, 320 152 Z"
           <!-- Star 2: Blå stjärna -->
           <g id="star-2" class="toy-star" data-index="2">
             <path class="star-body" d="M 443.0 338.0 L 457.1 366.6 L 488.6 371.2 L 465.8 393.4 L 471.2 424.8 L 443.0 410.0 L 414.8 424.8 L 420.2 393.4 L 397.3 371.2 L 428.9 366.6 Z" fill="#00B0FF" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
+            <g id="star-sym-2" class="star-symbol-overlay" style="pointer-events: none;"></g>
             <!-- LED Assembly -->
             <g class="led-assembly" id="led-2">
               <circle cx="443.0" cy="386.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
@@ -267,6 +288,7 @@ C 402 128, 365 152, 320 152 Z"
           <!-- Star 3: Orange stjärna -->
           <g id="star-3" class="toy-star" data-index="3">
             <path class="star-body" d="M 320.0 409.0 L 334.1 437.6 L 365.7 442.2 L 342.8 464.4 L 348.2 495.8 L 320.0 481.0 L 291.8 495.8 L 297.2 464.4 L 274.3 442.2 L 305.9 437.6 Z" fill="#FF6D00" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
+            <g id="star-sym-3" class="star-symbol-overlay" style="pointer-events: none;"></g>
             <!-- LED Assembly -->
             <g class="led-assembly" id="led-3">
               <circle cx="320.0" cy="457.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
@@ -284,6 +306,7 @@ C 402 128, 365 152, 320 152 Z"
           <!-- Star 4: Grön stjärna -->
           <g id="star-4" class="toy-star" data-index="4">
             <path class="star-body" d="M 197.0 338.0 L 211.1 366.6 L 242.7 371.2 L 219.8 393.4 L 225.2 424.8 L 197.0 410.0 L 168.8 424.8 L 174.2 393.4 L 151.4 371.2 L 182.9 366.6 Z" fill="#00E676" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
+            <g id="star-sym-4" class="star-symbol-overlay" style="pointer-events: none;"></g>
             <!-- LED Assembly -->
             <g class="led-assembly" id="led-4">
               <circle cx="197.0" cy="386.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
@@ -301,6 +324,7 @@ C 402 128, 365 152, 320 152 Z"
           <!-- Star 5: Lila stjärna -->
           <g id="star-5" class="toy-star" data-index="5">
             <path class="star-body" d="M 197.0 196.0 L 211.1 224.6 L 242.7 229.2 L 219.8 251.4 L 225.2 282.8 L 197.0 268.0 L 168.8 282.8 L 174.2 251.4 L 151.4 229.2 L 182.9 224.6 Z" fill="#BA68C8" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" filter="url(#starGlowShadow)"/>
+            <g id="star-sym-5" class="star-symbol-overlay" style="pointer-events: none;"></g>
             <!-- LED Assembly -->
             <g class="led-assembly" id="led-5">
               <circle cx="197.0" cy="244.0" r="10" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
@@ -369,7 +393,62 @@ C 402 128, 365 152, 320 152 Z"
     </div>
   </footer>
 
-  <!-- QR Code Modal (for easy testing on real phone) -->
+  <!-- Modals -->
+
+  <!-- 1. Voice Studio Modal (Spela in egna röster) -->
+  <div class="modal-overlay" id="modal-voice">
+    <div class="modal-card">
+      <button class="modal-close" id="btn-close-voice">&times;</button>
+      <h2>🎙️ Röststudio</h2>
+      <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 12px;">
+        Spela in egna hejarop, ord eller Ians eget skratt!
+      </p>
+
+      <div style="font-size: 0.85rem; font-weight: 700; text-align: left; margin: 8px 0 4px 0; color: #FFE082;">
+        👦 När man trycker på Ian:
+      </div>
+      <div class="record-row" id="row-rec-ian">
+        <div class="record-row-info">
+          <span>👦</span>
+          <span>Tryck på Ian</span>
+        </div>
+        <div class="record-row-btns">
+          <button class="btn-record" data-key="ian_click">🔴 Spela in</button>
+          <button class="btn-play-rec" data-key="ian_click" style="display: none;">▶️</button>
+          <button class="btn-del-rec" data-key="ian_click" style="display: none;">🗑️</button>
+        </div>
+      </div>
+
+      <div style="font-size: 0.85rem; font-weight: 700; text-align: left; margin: 14px 0 4px 0; color: #FFE082;">
+        ⭐ Stjärnor & Resultat:
+      </div>
+      <div id="voice-items-container">
+        <!-- Dynamically rendered rows for current mode -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Player Management Modal (Spelarläge) -->
+  <div class="modal-overlay" id="modal-players">
+    <div class="modal-card">
+      <button class="modal-close" id="btn-close-players">&times;</button>
+      <h2>👥 Spelare</h2>
+      <p style="font-size: 0.8rem; color: var(--text-dim);">
+        Turordning i brädspel: lägg till spelare som turas om att snurra!
+      </p>
+
+      <div class="player-list" id="player-list-container">
+        <!-- Rendered player rows -->
+      </div>
+
+      <div class="player-add-row">
+        <input type="text" id="input-new-player" class="player-input" placeholder="Nytt namn (t.ex. Ian)" maxlength="16">
+        <button id="btn-add-player" class="btn-add-player">Lägg till</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. QR Code Modal (for easy mobile sharing) -->
   <div class="modal-overlay" id="qr-modal">
     <div class="modal-card">
       <button class="modal-close" id="btn-close-qr">&times;</button>
@@ -381,7 +460,8 @@ C 402 128, 365 152, 320 152 Z"
     </div>
   </div>
 
-  <!-- Audio Synthesizer and Game Logic -->
+  <!-- Scripts -->
+  <script src="confetti.js"></script>
   <script src="audio.js"></script>
   <script src="app.js"></script>
 

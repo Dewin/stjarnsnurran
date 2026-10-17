@@ -1,11 +1,12 @@
 // Service Worker for Stjärnsnurran
-const CACHE_NAME = 'stjarnsnurran-v2';
+const CACHE_NAME = 'stjarnsnurran-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './audio.js',
+  './confetti.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',

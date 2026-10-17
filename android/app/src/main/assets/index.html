@@ -731,17 +731,24 @@ C 402 128, 365 152, 320 152 Z"
     </div>
   </div>
 
-  <!-- 2. Player Management Modal (Spelarläge) -->
+  <!-- 2. Player Management Modal (Spelarläge & Turordning) -->
   <div class="modal-overlay" id="modal-players">
     <div class="modal-card">
       <button class="modal-close" id="btn-close-players">&times;</button>
-      <h2>👥 Spelare</h2>
-      <p style="font-size: 0.8rem; color: var(--text-dim);">
-        Turordning i brädspel: lägg till spelare som turas om att snurra!
+      <h2>👥 Spelare & Turordning</h2>
+      <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px;">
+        Välj vilka som är med och i vilken ordning ni vill snurra!
       </p>
 
+      <div class="player-order-controls">
+        <button id="btn-shuffle-players" class="btn-order-action" type="button" title="Slumpa startordning med tärning">
+          🎲 Slumpa ordning
+        </button>
+        <span class="player-order-hint">Använd ⬆️ ⬇️ eller klicka på en spelare för att välja startare</span>
+      </div>
+
       <div class="player-list" id="player-list-container">
-        <!-- Rendered player rows -->
+        <!-- Rendered player rows with numbers and reordering buttons -->
       </div>
 
       <div class="player-add-row">
@@ -751,6 +758,15 @@ C 402 128, 365 152, 320 152 Z"
         </button>
         <input type="text" id="input-new-player" class="player-input" placeholder="Nytt namn (t.ex. Ian)" maxlength="16">
         <button id="btn-add-player" class="btn-add-player">Lägg till</button>
+      </div>
+
+      <div class="player-modal-actions">
+        <button id="btn-start-player-mode" class="btn-start-game" type="button">
+          🚀 Starta spelarläge!
+        </button>
+        <button id="btn-stop-player-mode" class="btn-stop-game" type="button" style="display: none;">
+          ⏹️ Avsluta spelarläge
+        </button>
       </div>
     </div>
   </div>

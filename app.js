@@ -293,6 +293,9 @@ class StarSpinner {
     this.btnAddPlayer = document.getElementById('btn-add-player');
     this.btnSelectNewAvatar = document.getElementById('btn-select-new-avatar');
     this.newPlayerAvatarPreview = document.getElementById('new-player-avatar-preview');
+    this.btnShufflePlayers = document.getElementById('btn-shuffle-players');
+    this.btnStartPlayerMode = document.getElementById('btn-start-player-mode');
+    this.btnStopPlayerMode = document.getElementById('btn-stop-player-mode');
 
     this.modalEmojiPicker = document.getElementById('modal-emoji-picker');
     this.btnCloseEmoji = document.getElementById('btn-close-emoji');
@@ -380,12 +383,9 @@ class StarSpinner {
       window.addEventListener('devicemotion', (e) => this.handleDeviceMotion(e));
     }
 
-    // Player mode toggle
+    // Player mode: opening the modal lets the user choose order, shuffle, or start
     this.btnTogglePlayers.addEventListener('click', () => {
-      this.playerModeEnabled = !this.playerModeEnabled;
-      this.btnTogglePlayers.classList.toggle('active', this.playerModeEnabled);
-      this.updatePlayerBanner();
-      this.saveState();
+      this.openPlayerModal();
     });
 
     this.btnOpenPlayerSettings.addEventListener('click', () => this.openPlayerModal());
@@ -393,6 +393,18 @@ class StarSpinner {
     this.modalPlayers.addEventListener('click', (e) => {
       if (e.target === this.modalPlayers) this.closePlayerModal();
     });
+
+    if (this.btnShufflePlayers) {
+      this.btnShufflePlayers.addEventListener('click', () => this.shufflePlayers());
+    }
+
+    if (this.btnStartPlayerMode) {
+      this.btnStartPlayerMode.addEventListener('click', () => this.startPlayerMode());
+    }
+
+    if (this.btnStopPlayerMode) {
+      this.btnStopPlayerMode.addEventListener('click', () => this.stopPlayerMode());
+    }
 
     this.btnAddPlayer.addEventListener('click', () => this.addNewPlayer());
     this.inputNewPlayer.addEventListener('keydown', (e) => {
@@ -766,6 +778,12 @@ class StarSpinner {
   }
 
   openPlayerModal() {
+    if (this.btnStartPlayerMode) {
+      this.btnStartPlayerMode.textContent = this.playerModeEnabled ? '✅ Klar / Spara ordning' : '🚀 Starta spelarläge!';
+    }
+    if (this.btnStopPlayerMode) {
+      this.btnStopPlayerMode.style.display = this.playerModeEnabled ? 'block' : 'none';
+    }
     this.renderPlayerList();
     this.modalPlayers.classList.add('open');
   }
@@ -774,33 +792,138 @@ class StarSpinner {
     this.modalPlayers.classList.remove('open');
   }
 
+  startPlayerMode() {
+    if (this.players.length === 0) {
+      alert('Lägg till minst en spelare först!');
+      return;
+    }
+    this.playerModeEnabled = true;
+    this.currentPlayerIdx = 0; // Top player in order always starts!
+    this.btnTogglePlayers.classList.add('active');
+    this.closePlayerModal();
+    this.updatePlayerBanner();
+    this.saveState();
+    this.vibrate([25, 40, 60]);
+    if (window.soundFX) window.soundFX.playButtonPress();
+
+    // Congratulatory starting prompt in Result Card
+    const starter = this.players[0];
+    this.resultTitle.textContent = `${starter.avatar} ${starter.name} börjar!`;
+    this.resultSub.textContent = 'Tryck på Ian för att snurra!';
+    this.resultBadge.textContent = starter.avatar;
+    this.resultBadge.style.background = starter.color;
+    this.resultBadge.classList.add('active-badge');
+  }
+
+  stopPlayerMode() {
+    this.playerModeEnabled = false;
+    this.btnTogglePlayers.classList.remove('active');
+    this.closePlayerModal();
+    this.updatePlayerBanner();
+    this.saveState();
+    this.resultTitle.textContent = 'Tryck på Ian för att snurra!';
+    this.resultSub.textContent = 'Spelarläge avstängt.';
+    this.resultBadge.textContent = '⭐';
+    this.resultBadge.style.background = '#333344';
+    this.resultBadge.classList.remove('active-badge');
+  }
+
+  shufflePlayers() {
+    if (this.players.length < 2) return;
+    // Modern Fisher-Yates shuffle
+    for (let i = this.players.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.players[i], this.players[j]] = [this.players[j], this.players[i]];
+    }
+    this.currentPlayerIdx = 0;
+    if (window.soundFX) window.soundFX.playShakeRattle();
+    this.vibrate([20, 30, 20]);
+    this.renderPlayerList();
+    this.updatePlayerBanner();
+    this.saveState();
+  }
+
+  movePlayer(index, direction) {
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= this.players.length) return;
+    const temp = this.players[index];
+    this.players[index] = this.players[targetIdx];
+    this.players[targetIdx] = temp;
+    this.currentPlayerIdx = 0;
+    if (window.soundFX) window.soundFX.playButtonPress();
+    this.vibrate(15);
+    this.renderPlayerList();
+    this.updatePlayerBanner();
+    this.saveState();
+  }
+
+  setStartPlayer(index) {
+    if (index <= 0 || index >= this.players.length) return;
+    const [starter] = this.players.splice(index, 1);
+    this.players.unshift(starter);
+    this.currentPlayerIdx = 0;
+    if (window.soundFX) window.soundFX.playButtonPress();
+    this.vibrate(25);
+    this.renderPlayerList();
+    this.updatePlayerBanner();
+    this.saveState();
+  }
+
   renderPlayerList() {
     this.playerListContainer.innerHTML = '';
     this.players.forEach((p, idx) => {
+      const isStarter = idx === 0;
       const row = document.createElement('div');
-      row.className = 'player-item';
+      row.className = 'player-item' + (isStarter ? ' is-start-player' : '');
       row.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <button class="btn-player-avatar" data-idx="${idx}" type="button" title="Klicka för att välja emoji för ${p.name}">
-            <span class="player-avatar-icon">${p.avatar}</span>
-            <span class="avatar-edit-badge">✏️</span>
-          </button>
-          <span style="font-weight: 700; font-size: 0.95rem;">${p.name}</span>
-          ${idx === this.currentPlayerIdx ? '<span class="tag-current-turn">Tur nu</span>' : ''}
+        <div class="player-order-num" title="Plats ${idx + 1}">${idx + 1}</div>
+        <button class="btn-player-avatar" data-idx="${idx}" type="button" title="Klicka för att välja emoji för ${p.name}">
+          <span class="player-avatar-icon">${p.avatar}</span>
+          <span class="avatar-edit-badge">✏️</span>
+        </button>
+        <div class="player-details" data-idx="${idx}" title="Klicka för att sätta som startspelare">
+          <span class="player-name">${p.name}</span>
+          ${isStarter ? '<span class="tag-start-player">👑 Startar först!</span>' : '<span class="tag-set-starter">Klicka för att starta</span>'}
         </div>
-        ${this.players.length > 1 ? `<button class="btn-del-rec" data-idx="${idx}" title="Ta bort">🗑️</button>` : ''}
+        <div class="player-reorder-btns">
+          <button class="btn-move-player" data-idx="${idx}" data-dir="-1" type="button" title="Flytta upp" ${idx === 0 ? 'disabled' : ''}>⬆️</button>
+          <button class="btn-move-player" data-idx="${idx}" data-dir="1" type="button" title="Flytta ner" ${idx === this.players.length - 1 ? 'disabled' : ''}>⬇️</button>
+          ${this.players.length > 1 ? `<button class="btn-del-player" data-idx="${idx}" type="button" title="Ta bort">🗑️</button>` : ''}
+        </div>
       `;
 
+      // Avatar picker
       const avatarBtn = row.querySelector('.btn-player-avatar');
       if (avatarBtn) {
-        avatarBtn.addEventListener('click', () => {
+        avatarBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
           this.openEmojiPicker(idx);
         });
       }
 
-      const delBtn = row.querySelector('.btn-del-rec');
+      // Tap on player details to set as start player
+      const details = row.querySelector('.player-details');
+      if (details) {
+        details.addEventListener('click', () => {
+          if (idx !== 0) this.setStartPlayer(idx);
+        });
+      }
+
+      // Move up/down buttons
+      const moveBtns = row.querySelectorAll('.btn-move-player');
+      moveBtns.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const dir = parseInt(btn.dataset.dir, 10);
+          this.movePlayer(idx, dir);
+        });
+      });
+
+      // Delete button
+      const delBtn = row.querySelector('.btn-del-player');
       if (delBtn) {
-        delBtn.addEventListener('click', () => {
+        delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
           this.players.splice(idx, 1);
           if (this.currentPlayerIdx >= this.players.length) this.currentPlayerIdx = 0;
           this.renderPlayerList();
@@ -808,6 +931,7 @@ class StarSpinner {
           this.saveState();
         });
       }
+
       this.playerListContainer.appendChild(row);
     });
   }

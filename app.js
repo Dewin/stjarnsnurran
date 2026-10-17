@@ -454,6 +454,11 @@ class StarSpinner {
     this.inputNewPlayer.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.addNewPlayer();
     });
+    this.inputNewPlayer.addEventListener('focus', () => {
+      setTimeout(() => {
+        this.inputNewPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 250);
+    });
 
     if (this.btnSelectNewAvatar) {
       this.btnSelectNewAvatar.addEventListener('click', () => this.openEmojiPicker(null));
@@ -1086,6 +1091,11 @@ class StarSpinner {
     this.renderPlayerList();
     this.updatePlayerBanner();
     this.saveState();
+    setTimeout(() => {
+      if (this.playerListContainer) {
+        this.playerListContainer.scrollTop = this.playerListContainer.scrollHeight;
+      }
+    }, 60);
   }
 
   // Emoji Picker for Players

@@ -762,8 +762,27 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin: 12px 0;
+  margin: 8px 0 12px 0;
   text-align: left;
+  max-height: min(34vh, 230px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 4px;
+}
+
+.player-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.player-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.player-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 214, 0, 0.35);
+  border-radius: 4px;
 }
 
 .player-item {
@@ -1086,11 +1105,30 @@ body {
   font-weight: 700;
 }
 
+.player-add-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin: 8px 0 12px 0;
+  text-align: left;
+}
+
+.player-add-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #FFE082;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .player-add-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 12px;
+  margin: 0;
   width: 100%;
   box-sizing: border-box;
 }
@@ -1233,4 +1271,21 @@ body {
   color: var(--text-dim);
   line-height: 1.35;
   margin-top: 6px;
+}
+
+/* Mobile On-Screen Keyboard & Short Screen Adaptations */
+@media (max-height: 650px) {
+  .modal-overlay {
+    align-items: flex-start;
+    padding-top: 6px;
+    padding-bottom: 14px;
+    overflow-y: auto;
+  }
+  .modal-card {
+    max-height: 96vh;
+    padding: 12px 10px;
+  }
+  .player-list {
+    max-height: 140px;
+  }
 }

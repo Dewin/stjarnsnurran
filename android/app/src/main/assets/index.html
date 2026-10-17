@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
 
@@ -748,6 +748,19 @@ C 402 128, 365 152, 320 152 Z"
         Välj vilka som är med och i vilken ordning ni vill snurra!
       </p>
 
+      <!-- Add new player section (at top so it never gets hidden behind the keyboard when list is long) -->
+      <div class="player-add-section">
+        <div class="player-add-title">➕ Lägg till ny spelare:</div>
+        <div class="player-add-row">
+          <button id="btn-select-new-avatar" class="btn-avatar-picker-trigger" type="button" title="Välj emoji för spelare">
+            <span id="new-player-avatar-preview">👦</span>
+            <span class="avatar-edit-badge">✏️</span>
+          </button>
+          <input type="text" id="input-new-player" class="player-input" placeholder="Nytt namn (t.ex. Ian)" maxlength="16" autocomplete="off" autocapitalize="words">
+          <button id="btn-add-player" class="btn-add-player" type="button">Lägg till</button>
+        </div>
+      </div>
+
       <div class="player-order-controls">
         <button id="btn-shuffle-players" class="btn-order-action" type="button" title="Slumpa startordning med tärning">
           🎲 Slumpa ordning
@@ -762,15 +775,6 @@ C 402 128, 365 152, 320 152 Z"
         <!-- Rendered player rows with numbers and reordering buttons -->
       </div>
 
-      <div class="player-add-row">
-        <button id="btn-select-new-avatar" class="btn-avatar-picker-trigger" type="button" title="Välj emoji för spelare">
-          <span id="new-player-avatar-preview">👦</span>
-          <span class="avatar-edit-badge">✏️</span>
-        </button>
-        <input type="text" id="input-new-player" class="player-input" placeholder="Nytt namn (t.ex. Ian)" maxlength="16">
-        <button id="btn-add-player" class="btn-add-player">Lägg till</button>
-      </div>
-
       <div class="player-modal-actions">
         <button id="btn-start-player-mode" class="btn-start-game" type="button">
           🚀 Starta spelarläge!
@@ -780,7 +784,7 @@ C 402 128, 365 152, 320 152 Z"
         </button>
       </div>
       <div class="app-version-badge" style="text-align: center; font-size: 0.72rem; color: #888899; margin-top: 14px;">
-        Stjärnsnurran v2.5 • Responsiv mittenknapp
+        Stjärnsnurran v2.6 • Mobilanpassat spelarläge
       </div>
       <div style="text-align: center; margin-top: 6px;">
         <button id="btn-modal-refresh" type="button" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); color: #B0B0C0; font-size: 0.72rem; border-radius: 6px; padding: 4px 10px; cursor: pointer;">
@@ -819,13 +823,13 @@ C 402 128, 365 152, 320 152 Z"
 
   <!-- Cache Version Auto-Check -->
   <script>
-    const APP_VERSION = 'v2.5';
+    const APP_VERSION = 'v2.6';
     if (localStorage.getItem('stjarnsnurran_installed_ver') !== APP_VERSION) {
       localStorage.setItem('stjarnsnurran_installed_ver', APP_VERSION);
       if ('caches' in window) {
         caches.keys().then(keys => {
           keys.forEach(k => {
-            if (k !== 'stjarnsnurran-v15') caches.delete(k);
+            if (k !== 'stjarnsnurran-v16') caches.delete(k);
           });
         });
       }
@@ -833,15 +837,15 @@ C 402 128, 365 152, 320 152 Z"
   </script>
 
   <!-- Scripts -->
-  <script src="confetti.js?v=15"></script>
-  <script src="audio.js?v=15"></script>
-  <script src="app.js?v=15"></script>
+  <script src="confetti.js?v=16"></script>
+  <script src="audio.js?v=16"></script>
+  <script src="app.js?v=16"></script>
 
   <!-- Service Worker Registration with Aggressive Auto-Update -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=15').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=16').then((reg) => {
           // Immediately check for SW script changes
           reg.update();
 

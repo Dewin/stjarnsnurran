@@ -317,14 +317,19 @@ class StarSpinner {
     this.resultSub = document.getElementById('result-sub');
     this.historyItems = document.getElementById('history-items');
 
-    // Controls
+    // Controls & Settings
     this.btnTogglePlayers = document.getElementById('btn-toggle-players');
     this.btnVoiceStudio = document.getElementById('btn-voice-studio');
+    this.btnSettings = document.getElementById('btn-settings');
     this.btnShake = document.getElementById('btn-shake');
     this.btnSound = document.getElementById('btn-sound');
     this.btnForceRefresh = document.getElementById('btn-force-refresh');
     this.btnFullscreen = document.getElementById('btn-fullscreen');
     this.btnQr = document.getElementById('btn-qr');
+    this.btnSettingsSoundToggle = document.getElementById('btn-settings-sound-toggle');
+    this.settingsSoundIcon = document.getElementById('settings-sound-icon');
+    this.modalSettings = document.getElementById('modal-settings');
+    this.btnCloseSettings = document.getElementById('btn-close-settings');
 
     // Player UI
     this.playerBanner = document.getElementById('player-banner');
@@ -448,12 +453,38 @@ class StarSpinner {
       });
     });
 
-    // Sound toggle
-    this.btnSound.addEventListener('click', () => {
-      const active = this.btnSound.classList.toggle('active');
-      this.btnSound.textContent = active ? '🔊' : '🔇';
+    // Sound toggle (synchronized between header button and settings modal toggle)
+    const toggleSound = () => {
+      let active = true;
+      if (this.btnSound) {
+        active = this.btnSound.classList.toggle('active');
+        this.btnSound.textContent = active ? '🔊' : '🔇';
+      }
+      if (this.btnSettingsSoundToggle) {
+        this.btnSettingsSoundToggle.classList.toggle('active', active);
+        this.btnSettingsSoundToggle.textContent = active ? 'På' : 'Av';
+      }
+      if (this.settingsSoundIcon) {
+        this.settingsSoundIcon.textContent = active ? '🔊' : '🔇';
+      }
       if (window.soundFX) window.soundFX.setSoundEnabled(active);
-    });
+    };
+
+    if (this.btnSound) this.btnSound.addEventListener('click', toggleSound);
+    if (this.btnSettingsSoundToggle) this.btnSettingsSoundToggle.addEventListener('click', toggleSound);
+
+    // Settings Modal Open/Close
+    if (this.btnSettings) {
+      this.btnSettings.addEventListener('click', () => this.openSettingsModal());
+    }
+    if (this.btnCloseSettings) {
+      this.btnCloseSettings.addEventListener('click', () => this.closeSettingsModal());
+    }
+    if (this.modalSettings) {
+      this.modalSettings.addEventListener('click', (e) => {
+        if (e.target === this.modalSettings) this.closeSettingsModal();
+      });
+    }
 
     // Refresh / Cache clearing buttons
     if (this.btnForceRefresh) {
@@ -463,12 +494,16 @@ class StarSpinner {
       this.btnModalRefresh.addEventListener('click', () => this.forceRefreshApp());
     }
 
-    // Shake sensor toggle
-    this.btnShake.addEventListener('click', () => {
-      this.shakeEnabled = !this.shakeEnabled;
-      this.btnShake.classList.toggle('active', this.shakeEnabled);
-      this.btnShake.textContent = this.shakeEnabled ? '📳' : '📴';
-    });
+    // Shake sensor toggle (inside settings modal)
+    if (this.btnShake) {
+      this.btnShake.addEventListener('click', () => {
+        this.shakeEnabled = !this.shakeEnabled;
+        this.btnShake.classList.toggle('active', this.shakeEnabled);
+        this.btnShake.textContent = this.shakeEnabled ? 'På' : 'Av';
+        if (window.soundFX) window.soundFX.playUiClick();
+        this.vibrate(15);
+      });
+    }
 
     // Device motion for Shake to Roll
     if (window.DeviceMotionEvent) {
@@ -893,6 +928,18 @@ class StarSpinner {
     }
   }
 
+  openSettingsModal() {
+    if (this.modalSettings) {
+      this.modalSettings.classList.add('open');
+    }
+  }
+
+  closeSettingsModal() {
+    if (this.modalSettings) {
+      this.modalSettings.classList.remove('open');
+    }
+  }
+
   openPlayerModal() {
     if (this.btnStartPlayerMode) {
       this.btnStartPlayerMode.textContent = this.playerModeEnabled ? '✅ Klar / Spara ordning' : '🚀 Starta spelarläge!';
@@ -998,35 +1045,57 @@ class StarSpinner {
       const isStarter = idx === 0;
       const key = `player_turn_${p.id}`;
       const hasRec = window.soundFX && window.soundFX.hasCustomRecording(key);
-      const row = document.createElement('div');
-      row.className = 'player-item' + (isStarter ? ' is-start-player' : '');
-      row.innerHTML = `
-        <div class="player-order-num" title="Plats ${idx + 1}">${idx + 1}</div>
-        <button class="btn-player-avatar" data-idx="${idx}" type="button" title="Klicka för att välja emoji för ${p.name}">
-          <span class="player-avatar-icon">${p.avatar}</span>
-          <span class="avatar-edit-badge">✏️</span>
-        </button>
-        <div class="player-details" data-idx="${idx}" title="Klicka för att sätta som startspelare">
-          <span class="player-name">${p.name}</span>
-          ${p.history && p.history.length > 0 ? `<span class="player-list-last-roll" title="${p.name}s senaste snurr">Senast: ${p.history[0].name}</span>` : ''}
-          ${isStarter ? '<span class="tag-start-player">👑 Startar först!</span>' : '<span class="tag-set-starter">Klicka för att starta</span>'}
+      const card = document.createElement('div');
+      card.className = 'player-card' + (isStarter ? ' is-start-player' : '');
+
+      const lastRollText = (p.history && p.history.length > 0)
+        ? `<span class="player-card-last-roll" title="${p.name}s senaste snurr">Senast: ${p.history[0].name}</span>`
+        : '';
+
+      card.innerHTML = `
+        <div class="player-card-header">
+          <div class="player-identity">
+            <span class="player-order-badge" title="Plats #${idx + 1}">#${idx + 1}</span>
+            <button class="btn-player-avatar" data-idx="${idx}" type="button" title="Klicka för att byta emoji för ${p.name}">
+              <span class="player-avatar-icon">${p.avatar}</span>
+              <span class="avatar-edit-badge">✏️</span>
+            </button>
+            <div class="player-name-col">
+              <div class="player-name-row">
+                <span class="player-name">${p.name}</span>
+                ${isStarter ? '<span class="tag-start-player">👑 Startar</span>' : ''}
+              </div>
+              ${lastRollText}
+            </div>
+          </div>
+          ${!isStarter ? `
+            <button class="btn-make-starter" data-idx="${idx}" type="button" title="Klicka för att ${p.name} ska starta först">
+              Starta här 👑
+            </button>
+          ` : `
+            <span class="tag-start-player-pill" title="Startar först">👑 Startspelare</span>
+          `}
         </div>
-        <div class="player-voice-actions">
-          <button class="btn-player-rec ${hasRec ? 'has-recording' : ''}" data-idx="${idx}" type="button" title="${hasRec ? 'Byt inspelad röst för ' + p.name : 'Spela in röst för när det är ' + p.name + 's tur'}">
-            ${hasRec ? '🎙️✓' : '🎙️'}
-          </button>
-          ${hasRec ? `<button class="btn-player-play" data-idx="${idx}" type="button" title="Lyssna på ${p.name}s röst">▶️</button>` : ''}
-          ${hasRec ? `<button class="btn-player-del" data-idx="${idx}" type="button" title="Ta bort inspelad röst för ${p.name}">🗑️</button>` : ''}
-        </div>
-        <div class="player-reorder-btns">
-          <button class="btn-move-player" data-idx="${idx}" data-dir="-1" type="button" title="Flytta upp" ${idx === 0 ? 'disabled' : ''}>⬆️</button>
-          <button class="btn-move-player" data-idx="${idx}" data-dir="1" type="button" title="Flytta ner" ${idx === this.players.length - 1 ? 'disabled' : ''}>⬇️</button>
-          ${this.players.length > 1 ? `<button class="btn-del-player" data-idx="${idx}" type="button" title="Ta bort">❌</button>` : ''}
+
+        <div class="player-card-actions">
+          <div class="player-voice-tray">
+            <button class="btn-player-rec ${hasRec ? 'has-recording' : ''}" data-idx="${idx}" type="button" title="${hasRec ? 'Byt inspelad röst för ' + p.name : 'Spela in röst för när det är ' + p.name + 's tur'}">
+              ${hasRec ? '🎙️ Ändra röst' : '🎙️ Spela in röst'}
+            </button>
+            ${hasRec ? `<button class="btn-player-play" data-idx="${idx}" type="button" title="Lyssna på ${p.name}s röst">▶️</button>` : ''}
+            ${hasRec ? `<button class="btn-player-del" data-idx="${idx}" type="button" title="Ta bort röstinspelning för ${p.name}">🗑️</button>` : ''}
+          </div>
+
+          <div class="player-order-tray">
+            <button class="btn-move-player" data-idx="${idx}" data-dir="-1" type="button" title="Flytta upp" ${idx === 0 ? 'disabled' : ''}>⬆️</button>
+            <button class="btn-move-player" data-idx="${idx}" data-dir="1" type="button" title="Flytta ner" ${idx === this.players.length - 1 ? 'disabled' : ''}>⬇️</button>
+            ${this.players.length > 1 ? `<button class="btn-del-player" data-idx="${idx}" type="button" title="Ta bort ${p.name}">❌</button>` : ''}
+          </div>
         </div>
       `;
 
       // Avatar picker
-      const avatarBtn = row.querySelector('.btn-player-avatar');
+      const avatarBtn = card.querySelector('.btn-player-avatar');
       if (avatarBtn) {
         avatarBtn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -1034,16 +1103,17 @@ class StarSpinner {
         });
       }
 
-      // Tap on player details to set as start player
-      const details = row.querySelector('.player-details');
-      if (details) {
-        details.addEventListener('click', () => {
-          if (idx !== 0) this.setStartPlayer(idx);
+      // Tap on make-starter button to set as start player
+      const starterBtn = card.querySelector('.btn-make-starter');
+      if (starterBtn) {
+        starterBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.setStartPlayer(idx);
         });
       }
 
       // Voice record button
-      const voiceRecBtn = row.querySelector('.btn-player-rec');
+      const voiceRecBtn = card.querySelector('.btn-player-rec');
       if (voiceRecBtn) {
         voiceRecBtn.addEventListener('click', async (e) => {
           e.stopPropagation();
@@ -1055,7 +1125,7 @@ class StarSpinner {
             key,
             () => {
               voiceRecBtn.classList.add('recording');
-              voiceRecBtn.textContent = '⏹️';
+              voiceRecBtn.textContent = '⏹️ Stoppa';
               this.vibrate(25);
             },
             (saved) => {
@@ -1071,7 +1141,7 @@ class StarSpinner {
       }
 
       // Voice play button
-      const voicePlayBtn = row.querySelector('.btn-player-play');
+      const voicePlayBtn = card.querySelector('.btn-player-play');
       if (voicePlayBtn) {
         voicePlayBtn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -1080,7 +1150,7 @@ class StarSpinner {
       }
 
       // Voice delete button
-      const voiceDelBtn = row.querySelector('.btn-player-del');
+      const voiceDelBtn = card.querySelector('.btn-player-del');
       if (voiceDelBtn) {
         voiceDelBtn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -1094,7 +1164,7 @@ class StarSpinner {
       }
 
       // Move up/down buttons
-      const moveBtns = row.querySelectorAll('.btn-move-player');
+      const moveBtns = card.querySelectorAll('.btn-move-player');
       moveBtns.forEach((btn) => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -1103,8 +1173,8 @@ class StarSpinner {
         });
       });
 
-      // Delete button
-      const delBtn = row.querySelector('.btn-del-player');
+      // Delete player button
+      const delBtn = card.querySelector('.btn-del-player');
       if (delBtn) {
         delBtn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -1120,7 +1190,7 @@ class StarSpinner {
         });
       }
 
-      this.playerListContainer.appendChild(row);
+      this.playerListContainer.appendChild(card);
     });
   }
 
@@ -1440,9 +1510,12 @@ class StarSpinner {
 
     const updateBtns = () => {
       const hasRec = window.soundFX && window.soundFX.hasCustomRecording(key);
-      if (btnPlay) btnPlay.style.display = hasRec ? 'inline-block' : 'none';
-      if (btnDel) btnDel.style.display = hasRec ? 'inline-block' : 'none';
-      if (btnRec) btnRec.textContent = hasRec ? '🔄 Byt röst' : '🔴 Spela in';
+      if (btnPlay) btnPlay.style.display = hasRec ? 'inline-flex' : 'none';
+      if (btnDel) btnDel.style.display = hasRec ? 'inline-flex' : 'none';
+      if (btnRec) {
+        btnRec.textContent = hasRec ? '🎙️ Ändra' : '🔴 Spela in';
+        btnRec.classList.toggle('has-recording', hasRec);
+      }
     };
 
     updateBtns();

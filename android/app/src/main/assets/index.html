@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   
-  <link rel="stylesheet" href="style.css?v=18">
+  <link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
 
@@ -28,11 +28,8 @@
     <div class="header-controls">
       <button id="btn-toggle-players" class="icon-btn" title="Spelarläge (Vems tur är det?)" aria-label="Spelarläge">👥</button>
       <button id="btn-voice-studio" class="icon-btn" title="Spela in egna röster / ljud" aria-label="Röststudio">🎙️</button>
-      <button id="btn-shake" class="icon-btn active" title="Skaka telefonen för att snurra: På/Av" aria-label="Skaka">📳</button>
       <button id="btn-sound" class="icon-btn active" title="Ljud På/Av" aria-label="Ljud På/Av">🔊</button>
-      <button id="btn-force-refresh" class="icon-btn" title="Hämta senaste versionen / Rensa cache" aria-label="Uppdatera">🔄</button>
-      <button id="btn-fullscreen" class="icon-btn" title="Helskärm" aria-label="Helskärm">⛶</button>
-      <button id="btn-qr" class="icon-btn" title="Dela / Öppna på mobil" aria-label="Öppna på mobil">📱</button>
+      <button id="btn-settings" class="icon-btn" title="Inställningar & verktyg" aria-label="Inställningar">⚙️</button>
     </div>
   </header>
 
@@ -47,9 +44,12 @@
   <div class="player-turn-banner" id="player-banner" style="display: none;">
     <div class="player-info">
       <span class="player-avatar" id="current-player-avatar">👦</span>
-      <span class="player-text" id="current-player-text">Ians tur att snurra!</span>
+      <div class="player-turn-text-group">
+        <span class="player-text" id="current-player-text">Ians tur att snurra!</span>
+        <span class="player-turn-sub">Tryck i mitten för att snurra ⭐</span>
+      </div>
     </div>
-    <button class="btn-player-settings" id="btn-open-player-settings">Hantera spelare ⚙️</button>
+    <button class="btn-player-settings" id="btn-open-player-settings" type="button">Hantera ⚙️</button>
   </div>
 
   <!-- Install PWA Banner (shown if installable on Android) -->
@@ -699,6 +699,83 @@ C 402 128, 365 152, 320 152 Z"
 
   <!-- Modals -->
 
+  <!-- 0. Settings Modal (Inställningar & Fler verktyg) -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal-card modal-settings-card">
+      <button class="modal-close" id="btn-close-settings">&times;</button>
+      <h2>⚙️ Inställningar & Mer</h2>
+      <p style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 14px;">
+        Anpassa funktioner och hantera appen
+      </p>
+
+      <div class="settings-list">
+        <!-- Skaka telefonen -->
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-icon">📳</span>
+            <div class="settings-item-texts">
+              <div class="settings-item-title">Skaka för att snurra</div>
+              <div class="settings-item-desc">Skaka telefonen kraftigt för att starta snurran</div>
+            </div>
+          </div>
+          <button id="btn-shake" class="btn-settings-toggle active" type="button" aria-label="Skaka på/av">På</button>
+        </div>
+
+        <!-- Ljudeffekter -->
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-icon" id="settings-sound-icon">🔊</span>
+            <div class="settings-item-texts">
+              <div class="settings-item-title">Ljudeffekter & röster</div>
+              <div class="settings-item-desc">Spela upp melodier, ljudeffekter och inspelade röster</div>
+            </div>
+          </div>
+          <button id="btn-settings-sound-toggle" class="btn-settings-toggle active" type="button" aria-label="Ljud på/av">På</button>
+        </div>
+
+        <!-- Helskärm -->
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-icon">⛶</span>
+            <div class="settings-item-texts">
+              <div class="settings-item-title">Helskärmsläge</div>
+              <div class="settings-item-desc">Dölj webbläsarens menyer för full appkänsla</div>
+            </div>
+          </div>
+          <button id="btn-fullscreen" class="btn-settings-action" type="button">Helskärm</button>
+        </div>
+
+        <!-- Öppna på mobil / QR -->
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-icon">📱</span>
+            <div class="settings-item-texts">
+              <div class="settings-item-title">Dela / Öppna på mobil</div>
+              <div class="settings-item-desc">Öppna med QR-kod på en annan telefon eller surfplatta</div>
+            </div>
+          </div>
+          <button id="btn-qr" class="btn-settings-action" type="button">Visa QR</button>
+        </div>
+
+        <!-- Uppdatera & Rensa Cache -->
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-icon">🔄</span>
+            <div class="settings-item-texts">
+              <div class="settings-item-title">Hämta senaste versionen</div>
+              <div class="settings-item-desc">Rensa sparad cache och ladda in nyaste funktionerna</div>
+            </div>
+          </div>
+          <button id="btn-force-refresh" class="btn-settings-action btn-settings-refresh" type="button">Uppdatera</button>
+        </div>
+      </div>
+
+      <div class="settings-footer">
+        <div class="app-version-badge">Stjärnsnurran v2.9 • Skapad för Ian och familjen ❤️</div>
+      </div>
+    </div>
+  </div>
+
   <!-- 1. Voice Studio Modal (Spela in egna röster) -->
   <div class="modal-overlay" id="modal-voice">
     <div class="modal-card">
@@ -773,7 +850,6 @@ C 402 128, 365 152, 320 152 Z"
         <button id="btn-reset-history" class="btn-order-action" type="button" title="Nollställ alla spelares historik för en ny spelomgång">
           🔄 Nollställ historik
         </button>
-        <span class="player-order-hint">Använd ⬆️ ⬇️ eller klicka på en spelare för att välja startare</span>
       </div>
 
       <div class="player-list" id="player-list-container">
@@ -789,7 +865,7 @@ C 402 128, 365 152, 320 152 Z"
         </button>
       </div>
       <div class="app-version-badge" style="text-align: center; font-size: 0.72rem; color: #888899; margin-top: 14px;">
-        Stjärnsnurran v2.8 • Tydliga stjärnfärger i röststudion
+        Stjärnsnurran v2.9 • Skapad för Ian och familjen ❤️
       </div>
       <div style="text-align: center; margin-top: 6px;">
         <button id="btn-modal-refresh" type="button" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); color: #B0B0C0; font-size: 0.72rem; border-radius: 6px; padding: 4px 10px; cursor: pointer;">
@@ -833,13 +909,13 @@ C 402 128, 365 152, 320 152 Z"
 
   <!-- Cache Version Auto-Check -->
   <script>
-    const APP_VERSION = 'v2.8';
+    const APP_VERSION = 'v2.9';
     if (localStorage.getItem('stjarnsnurran_installed_ver') !== APP_VERSION) {
       localStorage.setItem('stjarnsnurran_installed_ver', APP_VERSION);
       if ('caches' in window) {
         caches.keys().then(keys => {
           keys.forEach(k => {
-            if (k !== 'stjarnsnurran-v18') caches.delete(k);
+            if (k !== 'stjarnsnurran-v19') caches.delete(k);
           });
         });
       }
@@ -847,15 +923,15 @@ C 402 128, 365 152, 320 152 Z"
   </script>
 
   <!-- Scripts -->
-  <script src="confetti.js?v=18"></script>
-  <script src="audio.js?v=18"></script>
-  <script src="app.js?v=18"></script>
+  <script src="confetti.js?v=19"></script>
+  <script src="audio.js?v=19"></script>
+  <script src="app.js?v=19"></script>
 
   <!-- Service Worker Registration with Aggressive Auto-Update -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=18').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=19').then((reg) => {
           // Immediately check for SW script changes
           reg.update();
 

@@ -224,6 +224,15 @@ const GAME_MODES = {
   }
 };
 
+const AVATAR_EMOJIS = [
+  '👦', '👧', '👶', '👩', '👨', '👵', '👴',
+  '🦸', '🦹', '🧙', '🧚', '👸', '🤴', '🤖',
+  '🐶', '🐱', '🐰', '🦊', '🐻', '🐼', '🦁',
+  '🐯', '🐵', '🐸', '🦄', '🦖', '🐙', '🐬',
+  '🦋', '🐝', '⭐', '🌈', '🚀', '🚗', '🍦',
+  '🍕', '🎈', '🎮', '⚽', '👑'
+];
+
 class StarSpinner {
   constructor() {
     this.isSpinning = false;
@@ -240,6 +249,8 @@ class StarSpinner {
       { id: 3, name: 'Pappa', avatar: '👨', color: '#00B0FF' }
     ];
     this.currentPlayerIdx = 0;
+    this.selectedNewPlayerAvatar = '👦';
+    this.editingPlayerIndex = null;
 
     // Shake sensor state
     this.shakeEnabled = true;
@@ -266,6 +277,7 @@ class StarSpinner {
     // Player UI
     this.playerBanner = document.getElementById('player-banner');
     this.currentPlayerAvatar = document.getElementById('current-player-avatar');
+    this.currentPlayerAvatarBtn = document.getElementById('current-player-avatar-btn');
     this.currentPlayerText = document.getElementById('current-player-text');
     this.btnOpenPlayerSettings = document.getElementById('btn-open-player-settings');
 
@@ -279,6 +291,13 @@ class StarSpinner {
     this.playerListContainer = document.getElementById('player-list-container');
     this.inputNewPlayer = document.getElementById('input-new-player');
     this.btnAddPlayer = document.getElementById('btn-add-player');
+    this.btnSelectNewAvatar = document.getElementById('btn-select-new-avatar');
+    this.newPlayerAvatarPreview = document.getElementById('new-player-avatar-preview');
+
+    this.modalEmojiPicker = document.getElementById('modal-emoji-picker');
+    this.btnCloseEmoji = document.getElementById('btn-close-emoji');
+    this.emojiGrid = document.getElementById('emoji-grid');
+    this.emojiPickerSubtitle = document.getElementById('emoji-picker-subtitle');
 
     this.qrModal = document.getElementById('qr-modal');
     this.btnCloseQr = document.getElementById('btn-close-qr');
@@ -379,6 +398,28 @@ class StarSpinner {
     this.inputNewPlayer.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.addNewPlayer();
     });
+
+    if (this.btnSelectNewAvatar) {
+      this.btnSelectNewAvatar.addEventListener('click', () => this.openEmojiPicker(null));
+    }
+
+    if (this.currentPlayerAvatarBtn) {
+      this.currentPlayerAvatarBtn.addEventListener('click', () => {
+        if (this.playerModeEnabled && this.players.length > 0) {
+          this.openEmojiPicker(this.currentPlayerIdx);
+        }
+      });
+    }
+
+    if (this.btnCloseEmoji) {
+      this.btnCloseEmoji.addEventListener('click', () => this.closeEmojiPicker());
+    }
+
+    if (this.modalEmojiPicker) {
+      this.modalEmojiPicker.addEventListener('click', (e) => {
+        if (e.target === this.modalEmojiPicker) this.closeEmojiPicker();
+      });
+    }
 
     // Voice studio modal
     this.btnVoiceStudio.addEventListener('click', () => this.openVoiceModal());
@@ -667,7 +708,7 @@ class StarSpinner {
     this.resultBadge.classList.add('active-badge');
 
     if (currentPlayer) {
-      this.resultTitle.textContent = `${currentPlayer.name}: ${winnerData.name}`;
+      this.resultTitle.textContent = `${currentPlayer.avatar} ${currentPlayer.name}: ${winnerData.name}`;
       this.resultSub.textContent = winnerData.sub;
     } else {
       this.resultTitle.textContent = winnerData.name;
@@ -739,13 +780,24 @@ class StarSpinner {
       const row = document.createElement('div');
       row.className = 'player-item';
       row.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 1.2rem;">${p.avatar}</span>
-          <span style="font-weight: 700;">${p.name}</span>
-          ${idx === this.currentPlayerIdx ? '<span style="font-size: 0.75rem; color: #FFE082; background: rgba(255,214,0,0.2); padding: 2px 6px; border-radius: 6px;">Tur nu</span>' : ''}
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button class="btn-player-avatar" data-idx="${idx}" type="button" title="Klicka för att välja emoji för ${p.name}">
+            <span class="player-avatar-icon">${p.avatar}</span>
+            <span class="avatar-edit-badge">✏️</span>
+          </button>
+          <span style="font-weight: 700; font-size: 0.95rem;">${p.name}</span>
+          ${idx === this.currentPlayerIdx ? '<span class="tag-current-turn">Tur nu</span>' : ''}
         </div>
         ${this.players.length > 1 ? `<button class="btn-del-rec" data-idx="${idx}" title="Ta bort">🗑️</button>` : ''}
       `;
+
+      const avatarBtn = row.querySelector('.btn-player-avatar');
+      if (avatarBtn) {
+        avatarBtn.addEventListener('click', () => {
+          this.openEmojiPicker(idx);
+        });
+      }
+
       const delBtn = row.querySelector('.btn-del-rec');
       if (delBtn) {
         delBtn.addEventListener('click', () => {
@@ -763,22 +815,87 @@ class StarSpinner {
   addNewPlayer() {
     const name = this.inputNewPlayer.value.trim();
     if (!name) return;
-    const avatars = ['👦', '👧', '👩', '👨', '🐶', '🐱', '🦁', '🐻', '⭐'];
     const colors = ['#FFD600', '#FF4081', '#00B0FF', '#00E676', '#FF6D00', '#AB47BC'];
-    const randomAvatar = avatars[this.players.length % avatars.length];
     const randomColor = colors[this.players.length % colors.length];
 
     this.players.push({
       id: Date.now(),
       name: name,
-      avatar: randomAvatar,
+      avatar: this.selectedNewPlayerAvatar || '👦',
       color: randomColor
     });
 
     this.inputNewPlayer.value = '';
+    const defaultAvatars = ['👦', '👧', '👩', '👨', '🐶', '🐱', '🦁', '🐻', '⭐'];
+    this.selectedNewPlayerAvatar = defaultAvatars[this.players.length % defaultAvatars.length];
+    if (this.newPlayerAvatarPreview) {
+      this.newPlayerAvatarPreview.textContent = this.selectedNewPlayerAvatar;
+    }
     this.renderPlayerList();
     this.updatePlayerBanner();
     this.saveState();
+  }
+
+  // Emoji Picker for Players
+  openEmojiPicker(playerIndex = null) {
+    this.editingPlayerIndex = playerIndex;
+    const currentEmoji = playerIndex !== null
+      ? this.players[playerIndex].avatar
+      : this.selectedNewPlayerAvatar;
+
+    if (playerIndex !== null) {
+      const p = this.players[playerIndex];
+      if (this.emojiPickerSubtitle) {
+        this.emojiPickerSubtitle.textContent = `Välj en emoji för ${p.name}:`;
+      }
+    } else {
+      if (this.emojiPickerSubtitle) {
+        this.emojiPickerSubtitle.textContent = 'Välj en emoji för ny spelare:';
+      }
+    }
+
+    this.renderEmojiGrid(currentEmoji);
+    if (this.modalEmojiPicker) {
+      this.modalEmojiPicker.classList.add('open');
+    }
+  }
+
+  closeEmojiPicker() {
+    if (this.modalEmojiPicker) {
+      this.modalEmojiPicker.classList.remove('open');
+    }
+    this.editingPlayerIndex = null;
+  }
+
+  renderEmojiGrid(selectedEmoji) {
+    if (!this.emojiGrid) return;
+    this.emojiGrid.innerHTML = '';
+    AVATAR_EMOJIS.forEach((em) => {
+      const btn = document.createElement('button');
+      btn.className = 'emoji-opt' + (em === selectedEmoji ? ' selected' : '');
+      btn.textContent = em;
+      btn.type = 'button';
+      btn.addEventListener('click', () => {
+        this.selectEmoji(em);
+      });
+      this.emojiGrid.appendChild(btn);
+    });
+  }
+
+  selectEmoji(emoji) {
+    if (this.editingPlayerIndex !== null) {
+      this.players[this.editingPlayerIndex].avatar = emoji;
+      this.renderPlayerList();
+      this.updatePlayerBanner();
+      this.saveState();
+    } else {
+      this.selectedNewPlayerAvatar = emoji;
+      if (this.newPlayerAvatarPreview) {
+        this.newPlayerAvatarPreview.textContent = emoji;
+      }
+    }
+    this.vibrate(15);
+    this.closeEmojiPicker();
   }
 
   // Voice Studio Modal
@@ -922,8 +1039,8 @@ class StarSpinner {
       const dot = document.createElement('div');
       dot.className = 'history-dot';
       dot.style.background = item.winner.badgeGradient;
-      dot.title = item.player ? `${item.player.name}: ${item.winner.name}` : item.winner.name;
-      dot.textContent = item.player ? item.player.name[0] : item.winner.emoji || '';
+      dot.title = item.player ? `${item.player.avatar || ''} ${item.player.name}: ${item.winner.name}` : item.winner.name;
+      dot.textContent = item.player ? (item.player.avatar || item.player.name[0]) : (item.winner.emoji || (item.winner.dicePips ? '🎲' : '⭐'));
       this.historyItems.appendChild(dot);
     });
   }

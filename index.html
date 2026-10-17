@@ -45,7 +45,10 @@
   <!-- Player Turn Banner (activated when player mode is ON) -->
   <div class="player-turn-banner" id="player-banner" style="display: none;">
     <div class="player-info">
-      <span class="player-avatar" id="current-player-avatar">👦</span>
+      <button class="banner-avatar-btn" id="current-player-avatar-btn" title="Klicka för att byta din emoji!">
+        <span class="player-avatar" id="current-player-avatar">👦</span>
+        <span class="avatar-mini-edit">✏️</span>
+      </button>
       <span class="player-text" id="current-player-text">Ians tur att snurra!</span>
     </div>
     <button class="btn-player-settings" id="btn-open-player-settings">Hantera spelare ⚙️</button>
@@ -742,13 +745,32 @@ C 402 128, 365 152, 320 152 Z"
       </div>
 
       <div class="player-add-row">
+        <button id="btn-select-new-avatar" class="btn-avatar-picker-trigger" type="button" title="Välj emoji för spelare">
+          <span id="new-player-avatar-preview">👦</span>
+          <span class="avatar-edit-badge">✏️</span>
+        </button>
         <input type="text" id="input-new-player" class="player-input" placeholder="Nytt namn (t.ex. Ian)" maxlength="16">
         <button id="btn-add-player" class="btn-add-player">Lägg till</button>
       </div>
     </div>
   </div>
 
-  <!-- 3. QR Code Modal (for easy mobile sharing) -->
+  <!-- 3. Emoji Picker Modal (Välj avatar för spelare) -->
+  <div class="modal-overlay" id="modal-emoji-picker">
+    <div class="modal-card modal-emoji-card">
+      <button class="modal-close" id="btn-close-emoji">&times;</button>
+      <h2>🎭 Välj din avatar</h2>
+      <p id="emoji-picker-subtitle" style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px;">
+        Välj en emoji för spelaren:
+      </p>
+
+      <div class="emoji-grid" id="emoji-grid">
+        <!-- Rendered emojis -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. QR Code Modal (for easy mobile sharing) -->
   <div class="modal-overlay" id="qr-modal">
     <div class="modal-card">
       <button class="modal-close" id="btn-close-qr">&times;</button>

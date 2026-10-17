@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 
@@ -767,7 +767,7 @@ C 402 128, 365 152, 320 152 Z"
         </button>
       </div>
       <div class="app-version-badge" style="text-align: center; font-size: 0.72rem; color: #888899; margin-top: 14px;">
-        Stjärnsnurran v2.0 • Ljud & Fokusfix
+        Stjärnsnurran v2.1 • Variabel Snurrtid
       </div>
       <div style="text-align: center; margin-top: 6px;">
         <button id="btn-modal-refresh" type="button" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); color: #B0B0C0; font-size: 0.72rem; border-radius: 6px; padding: 4px 10px; cursor: pointer;">
@@ -806,13 +806,13 @@ C 402 128, 365 152, 320 152 Z"
 
   <!-- Cache Version Auto-Check -->
   <script>
-    const APP_VERSION = 'v2.0';
+    const APP_VERSION = 'v2.1';
     if (localStorage.getItem('stjarnsnurran_installed_ver') !== APP_VERSION) {
       localStorage.setItem('stjarnsnurran_installed_ver', APP_VERSION);
       if ('caches' in window) {
         caches.keys().then(keys => {
           keys.forEach(k => {
-            if (k !== 'stjarnsnurran-v10') caches.delete(k);
+            if (k !== 'stjarnsnurran-v11') caches.delete(k);
           });
         });
       }
@@ -820,15 +820,15 @@ C 402 128, 365 152, 320 152 Z"
   </script>
 
   <!-- Scripts -->
-  <script src="confetti.js?v=10"></script>
-  <script src="audio.js?v=10"></script>
-  <script src="app.js?v=10"></script>
+  <script src="confetti.js?v=11"></script>
+  <script src="audio.js?v=11"></script>
+  <script src="app.js?v=11"></script>
 
   <!-- Service Worker Registration with Aggressive Auto-Update -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=10').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=11').then((reg) => {
           // Immediately check for SW script changes
           reg.update();
 

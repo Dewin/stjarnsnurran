@@ -622,15 +622,24 @@ class StarSpinner {
     const winnerData = items[winningIndex];
 
     let currentPos = this.currentLedIndex >= 0 ? this.currentLedIndex : Math.floor(Math.random() * 6);
-    const fullLaps = 3 + Math.floor(Math.random() * 2);
+    
+    // Slumpmässig variation i snurrtid & karaktär (2 till 6 varv):
+    // Från snabba kvicka snurr (~2s) till långa spännande rysare (~6s)
+    const fullLaps = 2 + Math.floor(Math.random() * 5); // 2, 3, 4, 5 eller 6 varv
     const delta = (winningIndex - currentPos + 6) % 6;
     const totalSteps = fullLaps * 6 + delta + (delta < 2 ? 6 : 0);
+
+    // Slumpmässiga parametrar för inbromsning & fart:
+    const baseDelay = 36 + Math.floor(Math.random() * 16); // 36ms - 51ms initial fart
+    const finalCrawlDelay = 600 + Math.floor(Math.random() * 380); // 600ms - 980ms sista krypfart
+    const decelThreshold = 0.40 + Math.random() * 0.18; // Var avmattningen startar (40% - 58%)
+    const decelPower = 2.2 + Math.random() * 0.7; // Hur brant inbromsningskurvan är
 
     // Status banner
     this.resultBadge.textContent = '⏳';
     this.resultBadge.style.background = '#333344';
     this.resultBadge.classList.remove('active-badge');
-    this.resultTitle.textContent = 'Snurrar runt...';
+    this.resultTitle.textContent = fullLaps >= 5 ? 'Långsnurr! Spännande...' : 'Snurrar runt...';
     this.resultTitle.style.color = '#FFFFFF';
     this.resultSub.textContent = this.playerModeEnabled
       ? `${this.players[this.currentPlayerIdx].name} snurrar...`
@@ -640,11 +649,11 @@ class StarSpinner {
     let step = 0;
     while (step < totalSteps) {
       const progress = step / totalSteps;
-      let delay = 50;
+      let delay = baseDelay;
 
-      if (progress > 0.45) {
-        const slowFactor = (progress - 0.45) / 0.55;
-        delay = 55 + Math.pow(slowFactor, 2.6) * 780;
+      if (progress > decelThreshold) {
+        const slowFactor = (progress - decelThreshold) / (1 - decelThreshold);
+        delay = baseDelay + Math.pow(slowFactor, decelPower) * finalCrawlDelay;
       }
 
       const prevPos = currentPos;

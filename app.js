@@ -221,14 +221,68 @@ const GAME_MODES = {
   }
 };
 
-const AVATAR_EMOJIS = [
-  '👦', '👧', '👶', '👩', '👨', '👵', '👴',
-  '🦸', '🦹', '🧙', '🧚', '👸', '🤴', '🤖',
-  '🐶', '🐱', '🐰', '🦊', '🐻', '🐼', '🦁',
-  '🐯', '🐵', '🐸', '🦄', '🦖', '🐙', '🐬',
-  '🦋', '🐝', '⭐', '🌈', '🚀', '🚗', '🍦',
-  '🍕', '🎈', '🎮', '⚽', '👑'
+const EMOJI_CATEGORIES = [
+  {
+    id: 'all',
+    name: '🌟 Alla',
+    emojis: []
+  },
+  {
+    id: 'people',
+    name: '👦 Figurer',
+    emojis: [
+      '👦', '👧', '👶', '👩', '👨', '👵', '👴', '👱‍♀️', '👱‍♂️', '🧒',
+      '🦸', '🦸‍♀️', '🦹', '🧙', '🧙‍♀️', '🧚', '👸', '🤴', '👑',
+      '🤖', '👽', '👻', '🤠', '🥷', '🧑‍🚀', '🧑‍🚒', '👮', '🧑‍🎨'
+    ]
+  },
+  {
+    id: 'animals',
+    name: '🐶 Djur',
+    emojis: [
+      '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯',
+      '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🦆', '🦉', '🐴',
+      '🦄', '🐝', '🐛', '🦋', '🐞', '🐢', '🦖', '🦕', '🐙', '🐬',
+      '🐳', '🦈', '🦀', '🦥', '🦘', '🦔', '🐘', '🦒'
+    ]
+  },
+  {
+    id: 'vehicles',
+    name: '🚀 Fordon',
+    emojis: [
+      '🚗', '🚙', '🏎️', '🚓', '🚑', '🚒', '🚜', '🚂', '✈️', '🚀',
+      '🛸', '🚁', '⛵', '🚢', '🚲', '🛹', '🛴', '🏍️'
+    ]
+  },
+  {
+    id: 'fun',
+    name: '🎮 Skoj & Sport',
+    emojis: [
+      '🎮', '🎲', '🧩', '🎈', '🎪', '🎠', '🎨', '🎸', '🥁', '🎤',
+      '⚽', '🏀', '🏈', '⚾', '🎾', '🎳', '🏆', '🥇', '⭐', '🌈',
+      '☀️', '🌙', '⚡', '❄️', '🔥', '💎', '💖'
+    ]
+  },
+  {
+    id: 'food',
+    name: '🍦 Godsaker',
+    emojis: [
+      '🍦', '🍧', '🍨', '🍩', '🍪', '🎂', '🧁', '🍫', '🍿', '🍭',
+      '🍬', '🍕', '🍔', '🍟', '🍓', '🍉', '🍌', '🍎', '🍇', '🍒'
+    ]
+  }
 ];
+
+const ALL_AVATAR_EMOJIS = [];
+EMOJI_CATEGORIES.forEach((cat) => {
+  if (cat.id !== 'all') {
+    cat.emojis.forEach((em) => {
+      if (!ALL_AVATAR_EMOJIS.includes(em)) ALL_AVATAR_EMOJIS.push(em);
+    });
+  }
+});
+EMOJI_CATEGORIES[0].emojis = ALL_AVATAR_EMOJIS;
+const AVATAR_EMOJIS = ALL_AVATAR_EMOJIS;
 
 class StarSpinner {
   constructor() {
@@ -301,8 +355,10 @@ class StarSpinner {
 
     this.modalEmojiPicker = document.getElementById('modal-emoji-picker');
     this.btnCloseEmoji = document.getElementById('btn-close-emoji');
+    this.emojiCategoryPills = document.getElementById('emoji-category-pills');
     this.emojiGrid = document.getElementById('emoji-grid');
     this.emojiPickerSubtitle = document.getElementById('emoji-picker-subtitle');
+    this.activeEmojiCategory = 'all';
 
     this.qrModal = document.getElementById('qr-modal');
     this.btnCloseQr = document.getElementById('btn-close-qr');
@@ -1116,7 +1172,10 @@ class StarSpinner {
       }
     }
 
-    this.renderEmojiGrid(currentEmoji);
+    const foundCat = EMOJI_CATEGORIES.find((c) => c.id !== 'all' && c.emojis.includes(currentEmoji));
+    this.activeEmojiCategory = foundCat ? foundCat.id : 'all';
+
+    this.renderEmojiPicker(currentEmoji);
     if (this.modalEmojiPicker) {
       this.modalEmojiPicker.classList.add('open');
     }
@@ -1129,19 +1188,51 @@ class StarSpinner {
     this.editingPlayerIndex = null;
   }
 
-  renderEmojiGrid(selectedEmoji) {
+  renderEmojiPicker(selectedEmoji) {
     if (!this.emojiGrid) return;
+
+    // Render Category Pills
+    if (this.emojiCategoryPills) {
+      this.emojiCategoryPills.innerHTML = '';
+      EMOJI_CATEGORIES.forEach((cat) => {
+        const pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = 'emoji-cat-pill' + (cat.id === this.activeEmojiCategory ? ' active' : '');
+        pill.textContent = cat.name;
+        pill.addEventListener('click', () => {
+          this.activeEmojiCategory = cat.id;
+          this.renderEmojiPicker(selectedEmoji);
+          if (window.soundFX) window.soundFX.playUiClick();
+        });
+        this.emojiCategoryPills.appendChild(pill);
+      });
+    }
+
+    // Determine list of emojis to show
+    const currentCat = EMOJI_CATEGORIES.find((c) => c.id === this.activeEmojiCategory) || EMOJI_CATEGORIES[0];
+    const emojis = currentCat.id === 'all' ? ALL_AVATAR_EMOJIS : currentCat.emojis;
+
+    // Render Emoji Grid
     this.emojiGrid.innerHTML = '';
-    AVATAR_EMOJIS.forEach((em) => {
+    emojis.forEach((em) => {
       const btn = document.createElement('button');
       btn.className = 'emoji-opt' + (em === selectedEmoji ? ' selected' : '');
       btn.textContent = em;
       btn.type = 'button';
+      btn.setAttribute('aria-label', `Välj ${em}`);
       btn.addEventListener('click', () => {
         this.selectEmoji(em);
       });
       this.emojiGrid.appendChild(btn);
     });
+
+    // Scroll selected emoji into view if in current category
+    setTimeout(() => {
+      const selectedBtn = this.emojiGrid.querySelector('.emoji-opt.selected');
+      if (selectedBtn) {
+        selectedBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 60);
   }
 
   selectEmoji(emoji) {
@@ -1156,6 +1247,7 @@ class StarSpinner {
         this.newPlayerAvatarPreview.textContent = emoji;
       }
     }
+    if (window.soundFX) window.soundFX.playUiClick();
     this.vibrate(15);
     this.closeEmojiPicker();
   }

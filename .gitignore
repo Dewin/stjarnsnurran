@@ -1,0 +1,10 @@
+# Gitignore for Stjärnsnurran
+.edgedata/
+*.log
+__pycache__/
+.gradle/
+android/app/build/
+android/build/
+android/.gradle/
+.DS_Store
+Thumbs.db

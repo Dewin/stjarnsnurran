@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Stjärnsnurran - Slumpa färg</title>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#C62828">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Stjärnsnurran">
+  <meta name="description" content="Elektronisk stjärntärning med ljud och ljus för sällskapsspel.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top App Header -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-icon">⭐</span>
+      <h1>Stjärnsnurran</h1>
+    </div>
+    <div class="header-controls">
+      <button id="btn-sound" class="icon-btn active" title="Ljud På/Av" aria-label="Ljud På/Av">🔊</button>
+      <button id="btn-voice" class="icon-btn active" title="Tal På/Av (Läs upp färg)" aria-label="Tal På/Av">🗣️</button>
+      <button id="btn-fullscreen" class="icon-btn" title="Helskärm" aria-label="Helskärm">⛶</button>
+      <button id="btn-qr" class="icon-btn" title="Dela / Öppna på mobil" aria-label="Öppna på mobil">📱</button>
+    </div>
+  </header>
+
+  <!-- Install PWA Banner (shown if installable on Android) -->
+  <div id="install-banner" class="install-prompt-banner" style="display: none;">
+    <div class="install-text">
+      <span>⭐</span>
+      <span>Installera Stjärnsnurran som app på hemskärmen!</span>
+    </div>
+    <button id="btn-do-install" class="btn-install">Installera</button>
+  </div>
+
+  <!-- Main Toy Stage -->
+  <main class="main-stage">
+    <div class="toy-wrapper" id="toy-container">
+      <svg class="toy-svg" viewBox="0 0 640 560" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Plastic red casing gradient -->
+          <radialGradient id="plasticRed" cx="50%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#E53935"/>
+            <stop offset="60%" stop-color="#C62828"/>
+            <stop offset="100%" stop-color="#7F0000"/>
+          </radialGradient>
+
+          <!-- Inner face plate red -->
+          <radialGradient id="facePlate" cx="50%" cy="45%" r="55%">
+            <stop offset="0%" stop-color="#C62828"/>
+            <stop offset="70%" stop-color="#9C1A1A"/>
+            <stop offset="100%" stop-color="#730C0C"/>
+          </radialGradient>
+
+          <!-- Specular highlight for bear top -->
+          <linearGradient id="highlightGloss" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.32"/>
+            <stop offset="25%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+          </linearGradient>
+
+          <!-- Gold inner rim -->
+          <linearGradient id="goldRim" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFE082"/>
+            <stop offset="50%" stop-color="#FBC02D"/>
+            <stop offset="100%" stop-color="#F57F17"/>
+          </linearGradient>
+
+          <!-- Center button cream gradient -->
+          <linearGradient id="creamButton" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="65%" stop-color="#FFFDE7"/>
+            <stop offset="100%" stop-color="#FFF9C4"/>
+          </linearGradient>
+
+          <!-- LED On Glow Gradient -->
+          <radialGradient id="ledGlowGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFFFE0"/>
+            <stop offset="30%" stop-color="#FF5722"/>
+            <stop offset="75%" stop-color="#D50000"/>
+            <stop offset="100%" stop-color="#B71C1C" stop-opacity="0"/>
+          </radialGradient>
+
+          <!-- LED Off Dome Gradient -->
+          <radialGradient id="ledOffGrad" cx="38%" cy="32%" r="65%">
+            <stop offset="0%" stop-color="#8E1717"/>
+            <stop offset="50%" stop-color="#4A050A"/>
+            <stop offset="100%" stop-color="#240003"/>
+          </radialGradient>
+
+          <!-- Filter for 3D button shadow -->
+          <filter id="btnShadow" x="-25%" y="-25%" width="150%" height="160%">
+            <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.35"/>
+          </filter>
+
+          <!-- Filter for Bear casing drop shadow -->
+          <filter id="casingShadow" x="-10%" y="-5%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000000" flood-opacity="0.5"/>
+          </filter>
+
+          <!-- Filter for intense glowing LED bloom -->
+          <filter id="ledBloom" x="-150%" y="-150%" width="400%" height="400%">
+            <feGaussianBlur stdDeviation="6" result="blur1"/>
+            <feGaussianBlur stdDeviation="14" result="blur2"/>
+            <feGaussianBlur stdDeviation="24" result="blur3"/>
+            <feMerge>
+              <feMergeNode in="blur3"/>
+              <feMergeNode in="blur2"/>
+              <feMergeNode in="blur1"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Outer Bear Plastic Casing -->
+        <path d="M 320 135
+C 270 135, 230 110, 185 85
+C 125 50, 55 90, 55 170
+C 55 220, 85 255, 110 275
+C 65 315, 55 385, 95 440
+C 145 505, 230 535, 320 535
+C 410 535, 495 505, 545 440
+C 585 385, 575 315, 530 275
+C 555 255, 585 220, 585 170
+C 585 90, 515 50, 455 85
+C 410 110, 370 135, 320 135 Z" 
+              fill="url(#plasticRed)" filter="url(#casingShadow)" stroke="#660000" stroke-width="5"/>
+
+        <!-- Top Gloss Highlight -->
+        <path d="M 320 135
+C 270 135, 230 110, 185 85
+C 125 50, 55 90, 55 170
+C 55 220, 85 255, 110 275
+C 65 315, 55 385, 95 440
+C 145 505, 230 535, 320 535
+C 410 535, 495 505, 545 440
+C 585 385, 575 315, 530 275
+C 555 255, 585 220, 585 170
+C 585 90, 515 50, 455 85
+C 410 110, 370 135, 320 135 Z" fill="url(#highlightGloss)"/>
+
+        <!-- Inner Gold/Yellow Contour Border -->
+        <path d="M 320 152
+C 275 152, 238 128, 198 106
+C 145 76, 85 110, 85 175
+C 85 218, 110 248, 132 268
+C 92 305, 82 368, 118 418
+C 162 478, 238 505, 320 505
+C 402 505, 478 478, 522 418
+C 558 368, 548 305, 508 268
+C 530 248, 555 218, 555 175
+C 555 110, 495 76, 442 106
+C 402 128, 365 152, 320 152 Z" 
+              fill="none" stroke="url(#goldRim)" stroke-width="12" stroke-linejoin="round"/>
+
+        <!-- Inner Red Face Plate -->
+        <path d="M 320 152
+C 275 152, 238 128, 198 106
+C 145 76, 85 110, 85 175
+C 85 218, 110 248, 132 268
+C 92 305, 82 368, 118 418
+C 162 478, 238 505, 320 505
+C 402 505, 478 478, 522 418
+C 558 368, 548 305, 508 268
+C 530 248, 555 218, 555 175
+C 555 110, 495 76, 442 106
+C 402 128, 365 152, 320 152 Z" 
+              fill="url(#facePlate)" stroke="#B71C1C" stroke-width="2"/>
+
+        <!-- Retro decorative wave rings on face -->
+        <g opacity="0.14" stroke="#FFE082" stroke-width="2.5" fill="none">
+          <ellipse cx="320" cy="315" rx="180" ry="165"/>
+          <ellipse cx="320" cy="315" rx="145" ry="135"/>
+          <ellipse cx="320" cy="315" rx="110" ry="100"/>
+        </g>
+
+        <!-- Dashed Orbit Path connecting stars -->
+        <circle cx="320" cy="315" r="142" fill="none" stroke="#FFE082" stroke-width="2.5" stroke-dasharray="6,6" opacity="0.6"/>
+
+        <!-- Decorative white sparkle stars along orbit -->
+        <g fill="#FFFFFF" opacity="0.85">
+          <polygon points="385,200 388,208 396,208 390,213 392,221 385,216 378,221 380,213 374,208 382,208"/>
+          <polygon points="255,200 258,208 266,208 260,213 262,221 255,216 248,221 250,213 244,208 252,208"/>
+          <polygon points="455,340 458,345 464,345 459,349 461,355 455,351 449,355 451,349 446,345 452,345"/>
+          <polygon points="185,340 188,345 194,345 189,349 191,355 185,351 179,355 181,349 176,345 182,345"/>
+        </g>
+
+        <!-- The 6 Stars Group -->
+        <g id="stars-group">
+          <!-- Star 0: Rainbow Star (Top, 12 o'clock) -->
+          <g id="star-0" class="toy-star" data-index="0">
+            <g class="star-body">
+              <path d="M 320.0 173.0 L 308.2 164.5 L 320.0 133.0 L 331.8 164.5 Z" fill="#9D65A0" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M 320.0 173.0 L 331.8 164.5 L 358.0 160.7 L 334.4 182.4 Z" fill="#F5C518" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M 320.0 173.0 L 334.4 182.4 L 343.5 205.4 L 320.0 193.0 Z" fill="#20637A" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M 320.0 173.0 L 320.0 193.0 L 296.5 205.4 L 305.6 182.4 Z" fill="#D96144" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M 320.0 173.0 L 305.6 182.4 L 282.0 160.7 L 308.2 164.5 Z" fill="#2E7D32" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+            </g>
+            <g class="led-assembly" id="led-0">
+              <circle cx="320" cy="173" r="12" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+              <ellipse cx="317.5" cy="169.5" rx="3.5" ry="2" fill="#FFFFFF" opacity="0.4"/>
+              <g class="led-active-layer" style="display: none;">
+                <circle cx="320" cy="173" r="32" fill="#FF2600" opacity="0.4" filter="url(#ledBloom)"/>
+                <circle cx="320" cy="173" r="20" fill="#FF5722" opacity="0.8" filter="url(#ledBloom)"/>
+                <circle cx="320" cy="173" r="12" fill="url(#ledGlowGrad)"/>
+                <circle cx="320" cy="173" r="6" fill="#FFFDE7"/>
+                <ellipse cx="318.5" cy="171" rx="2.5" ry="1.5" fill="#FFFFFF"/>
+              </g>
+            </g>
+          </g>
+
+          <!-- Star 1: Yellow Star (Top-Right, 2 o'clock) -->
+          <g id="star-1" class="toy-star" data-index="1">
+            <path class="star-body" d="M 443.0 220.0 L 448.9 232.0 L 462.2 233.9 L 452.6 243.2 L 454.9 256.4 L 443.0 250.1 L 431.1 256.4 L 433.4 243.2 L 423.8 233.9 L 437.1 232.0 Z" 
+                  fill="#F5C518" stroke="#FFF8E7" stroke-width="2" stroke-linejoin="round" filter="drop-shadow(0 3px 4px rgba(0,0,0,0.3))"/>
+            <g class="led-assembly" id="led-1">
+              <circle cx="443" cy="244" r="12" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+              <ellipse cx="440.5" cy="240.5" rx="3.5" ry="2" fill="#FFFFFF" opacity="0.4"/>
+              <g class="led-active-layer" style="display: none;">
+                <circle cx="443" cy="244" r="32" fill="#FF2600" opacity="0.4" filter="url(#ledBloom)"/>
+                <circle cx="443" cy="244" r="20" fill="#FF5722" opacity="0.8" filter="url(#ledBloom)"/>
+                <circle cx="443" cy="244" r="12" fill="url(#ledGlowGrad)"/>
+                <circle cx="443" cy="244" r="6" fill="#FFFDE7"/>
+                <ellipse cx="441.5" cy="242" rx="2.5" ry="1.5" fill="#FFFFFF"/>
+              </g>
+            </g>
+          </g>
+
+          <!-- Star 2: Blue Star (Bottom-Right, 4 o'clock) -->
+          <g id="star-2" class="toy-star" data-index="2">
+            <path class="star-body" d="M 443.0 362.0 L 448.9 374.0 L 462.2 375.9 L 452.6 385.2 L 454.9 398.4 L 443.0 392.1 L 431.1 398.4 L 433.4 385.2 L 423.8 375.9 L 437.1 374.0 Z" 
+                  fill="#20637A" stroke="#FFF8E7" stroke-width="2" stroke-linejoin="round" filter="drop-shadow(0 3px 4px rgba(0,0,0,0.3))"/>
+            <g class="led-assembly" id="led-2">
+              <circle cx="443" cy="386" r="12" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+              <ellipse cx="440.5" cy="382.5" rx="3.5" ry="2" fill="#FFFFFF" opacity="0.4"/>
+              <g class="led-active-layer" style="display: none;">
+                <circle cx="443" cy="386" r="32" fill="#FF2600" opacity="0.4" filter="url(#ledBloom)"/>
+                <circle cx="443" cy="386" r="20" fill="#FF5722" opacity="0.8" filter="url(#ledBloom)"/>
+                <circle cx="443" cy="386" r="12" fill="url(#ledGlowGrad)"/>
+                <circle cx="443" cy="386" r="6" fill="#FFFDE7"/>
+                <ellipse cx="441.5" cy="384" rx="2.5" ry="1.5" fill="#FFFFFF"/>
+              </g>
+            </g>
+          </g>
+
+          <!-- Star 3: Orange Star (Bottom, 6 o'clock) -->
+          <g id="star-3" class="toy-star" data-index="3">
+            <path class="star-body" d="M 320.0 433.0 L 325.9 445.0 L 339.2 446.9 L 329.6 456.2 L 331.9 469.4 L 320.0 463.1 L 308.1 469.4 L 310.4 456.2 L 300.8 446.9 L 314.1 445.0 Z" 
+                  fill="#D96144" stroke="#FFF8E7" stroke-width="2" stroke-linejoin="round" filter="drop-shadow(0 3px 4px rgba(0,0,0,0.3))"/>
+            <g class="led-assembly" id="led-3">
+              <circle cx="320" cy="457" r="12" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+              <ellipse cx="317.5" cy="453.5" rx="3.5" ry="2" fill="#FFFFFF" opacity="0.4"/>
+              <g class="led-active-layer" style="display: none;">
+                <circle cx="320" cy="457" r="32" fill="#FF2600" opacity="0.4" filter="url(#ledBloom)"/>
+                <circle cx="320" cy="457" r="20" fill="#FF5722" opacity="0.8" filter="url(#ledBloom)"/>
+                <circle cx="320" cy="457" r="12" fill="url(#ledGlowGrad)"/>
+                <circle cx="320" cy="457" r="6" fill="#FFFDE7"/>
+                <ellipse cx="318.5" cy="455" rx="2.5" ry="1.5" fill="#FFFFFF"/>
+              </g>
+            </g>
+          </g>
+
+          <!-- Star 4: Green Star (Bottom-Left, 8 o'clock) -->
+          <g id="star-4" class="toy-star" data-index="4">
+            <path class="star-body" d="M 197.0 362.0 L 202.9 374.0 L 216.2 375.9 L 206.6 385.2 L 208.9 398.4 L 197.0 392.1 L 185.1 398.4 L 187.4 385.2 L 177.8 375.9 L 191.1 374.0 Z" 
+                  fill="#2E7D32" stroke="#FFF8E7" stroke-width="2" stroke-linejoin="round" filter="drop-shadow(0 3px 4px rgba(0,0,0,0.3))"/>
+            <g class="led-assembly" id="led-4">
+              <circle cx="197" cy="386" r="12" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+              <ellipse cx="194.5" cy="382.5" rx="3.5" ry="2" fill="#FFFFFF" opacity="0.4"/>
+              <g class="led-active-layer" style="display: none;">
+                <circle cx="197" cy="386" r="32" fill="#FF2600" opacity="0.4" filter="url(#ledBloom)"/>
+                <circle cx="197" cy="386" r="20" fill="#FF5722" opacity="0.8" filter="url(#ledBloom)"/>
+                <circle cx="197" cy="386" r="12" fill="url(#ledGlowGrad)"/>
+                <circle cx="197" cy="386" r="6" fill="#FFFDE7"/>
+                <ellipse cx="195.5" cy="384" rx="2.5" ry="1.5" fill="#FFFFFF"/>
+              </g>
+            </g>
+          </g>
+
+          <!-- Star 5: Purple Star (Top-Left, 10 o'clock) -->
+          <g id="star-5" class="toy-star" data-index="5">
+            <path class="star-body" d="M 197.0 220.0 L 202.9 232.0 L 216.2 233.9 L 206.6 243.2 L 208.9 256.4 L 197.0 250.1 L 185.1 256.4 L 187.4 243.2 L 177.8 233.9 L 191.1 232.0 Z" 
+                  fill="#9D65A0" stroke="#FFF8E7" stroke-width="2" stroke-linejoin="round" filter="drop-shadow(0 3px 4px rgba(0,0,0,0.3))"/>
+            <g class="led-assembly" id="led-5">
+              <circle cx="197" cy="244" r="12" fill="url(#ledOffGrad)" stroke="#1A0000" stroke-width="1.2"/>
+              <ellipse cx="194.5" cy="240.5" rx="3.5" ry="2" fill="#FFFFFF" opacity="0.4"/>
+              <g class="led-active-layer" style="display: none;">
+                <circle cx="197" cy="244" r="32" fill="#FF2600" opacity="0.4" filter="url(#ledBloom)"/>
+                <circle cx="197" cy="244" r="20" fill="#FF5722" opacity="0.8" filter="url(#ledBloom)"/>
+                <circle cx="197" cy="244" r="12" fill="url(#ledGlowGrad)"/>
+                <circle cx="197" cy="244" r="6" fill="#FFFDE7"/>
+                <ellipse cx="195.5" cy="242" rx="2.5" ry="1.5" fill="#FFFFFF"/>
+              </g>
+            </g>
+          </g>
+        </g>
+
+        <!-- Center Star Button with Clockwise Arrows -->
+        <g id="center-button" class="center-btn" role="button" aria-label="Snurra och slumpa stjärna" tabindex="0">
+          <!-- Outer dashed stitch border -->
+          <path d="M 320.0 233.0 L 332.3 258.5 L 360.5 262.5 L 340.1 282.4 L 344.9 310.5 L 320.0 297.0 L 295.1 310.5 L 299.9 282.4 L 279.5 262.5 L 307.7 258.5 Z" 
+                fill="none" stroke="#FFE082" stroke-width="2" stroke-dasharray="5,4" opacity="0.8" stroke-linejoin="round"/>
+
+          <!-- 3D White Star Button Body -->
+          <path id="btn-body" d="M 320.0 247.0 L 330.1 268.0 L 353.4 271.3 L 336.5 287.7 L 340.5 310.8 L 320.0 299.7 L 299.5 310.8 L 303.5 287.7 L 286.6 271.3 L 309.9 268.0 Z" 
+                fill="url(#creamButton)" stroke="#E0D7C6" stroke-width="3" stroke-linejoin="round" filter="url(#btnShadow)"/>
+
+          <!-- Curved red clockwise arrows -->
+          <g id="btn-arrows">
+            <!-- Top curved arrow -->
+            <path d="M 302 307 A 20 20 0 0 1 338 307" 
+                  fill="none" stroke="#B71C1C" stroke-width="5.5" stroke-linecap="round"/>
+            <polygon points="332,299 343,308 340,318" fill="#B71C1C"/>
+
+            <!-- Bottom curved arrow -->
+            <path d="M 338 323 A 20 20 0 0 1 302 323" 
+                  fill="none" stroke="#B71C1C" stroke-width="5.5" stroke-linecap="round"/>
+            <polygon points="308,331 297,322 300,312" fill="#B71C1C"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Result Banner below toy -->
+    <div class="result-card" id="result-card">
+      <div class="result-content">
+        <div class="result-badge" id="result-badge">⭐</div>
+        <div class="result-text">
+          <div class="result-title" id="result-title">Tryck för att snurra!</div>
+          <div class="result-sub" id="result-sub">Vem får vilken färg?</div>
+        </div>
+      </div>
+      <button id="btn-spin-quick" class="spin-btn-quick">Snurra!</button>
+    </div>
+  </main>
+
+  <!-- History & Statistics Strip -->
+  <footer class="app-footer">
+    <div class="history-strip">
+      <span class="history-label">Senaste:</span>
+      <div class="history-items" id="history-items">
+        <span style="font-size: 0.75rem; color: var(--text-dim);">Inga snurr än</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- QR Code Modal (for easy testing on real phone) -->
+  <div class="modal-overlay" id="qr-modal">
+    <div class="modal-card">
+      <button class="modal-close" id="btn-close-qr">&times;</button>
+      <h2>Öppna på din telefon</h2>
+      <p style="font-size: 0.85rem; color: var(--text-dim);">Skanna koden med mobilkameran för att köra appen direkt på telefonen:</p>
+      <img id="qr-img" class="qr-code-img" alt="QR-kod för mobilåtkomst">
+      <div id="qr-url" style="font-weight: 700; color: #FFE082; font-size: 0.9rem; word-break: break-all; margin-top: 6px;"></div>
+      <p class="qr-desc">Öppna i Chrome på din Android och tryck på "Installera app" för fullskärmsupplevelse!</p>
+    </div>
+  </div>
+
+  <!-- Audio Synthesizer and Game Logic -->
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+
+  <!-- Service Worker Registration for Offline PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => {
+          console.log('SW registration error:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

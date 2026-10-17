@@ -1,0 +1,455 @@
+:root {
+  --primary-red: #C62828;
+  --dark-red: #7F0000;
+  --gold-accent: #FBC02D;
+  --cream-white: #FFFDF0;
+  --bg-dark: #121216;
+  --panel-bg: #1c1c24;
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --text-main: #FFFFFF;
+  --text-dim: #A0A0B0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background: radial-gradient(circle at 50% 30%, #1e1e28 0%, var(--bg-dark) 100%);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 16px 14px;
+  touch-action: manipulation;
+}
+
+/* Top App Header */
+.app-header {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 8px 0;
+  min-width: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.brand-icon {
+  font-size: 1.25rem;
+  filter: drop-shadow(0 2px 4px rgba(251, 192, 45, 0.5));
+  flex-shrink: 0;
+}
+
+.brand h1 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  background: linear-gradient(135deg, #FFE082, #FFB300);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-controls {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--panel-border);
+  color: #FFFFFF;
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+}
+
+.icon-btn.active {
+  background: rgba(251, 192, 45, 0.25);
+  border-color: #FBC02D;
+  color: #FFE082;
+}
+
+/* Main Spinner Area */
+.main-stage {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.toy-wrapper {
+  width: 100%;
+  max-width: 360px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.toy-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.55));
+}
+
+/* Interactive SVG Elements */
+.center-btn {
+  transition: transform 0.1s ease-out;
+  transform-origin: 320px 315px;
+}
+
+.center-btn:hover #btn-body {
+  filter: url(#btnShadow) brightness(1.04);
+}
+
+.center-btn:active,
+.center-btn.pressed {
+  transform: scale(0.93) translateY(3px);
+}
+
+.center-btn.disabled {
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+/* Rotation arrows animation when spinning */
+.spinning #btn-arrows {
+  animation: spinArrows 0.75s linear infinite;
+  transform-origin: 320px 315px;
+}
+
+@keyframes spinArrows {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Star Winner Celebration Bounce */
+@keyframes winnerBounce {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.2); }
+  65% { transform: scale(0.96); }
+  85% { transform: scale(1.08); }
+  100% { transform: scale(1.04); }
+}
+
+.toy-star {
+  transition: transform 0.25s ease-out;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.toy-star.winner {
+  animation: winnerBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* LED pulse animation on win */
+@keyframes pulseLed {
+  0%, 100% { opacity: 0.95; filter: url(#ledBloom); }
+  50% { opacity: 0.35; }
+}
+
+.led-active-layer.pulsing {
+  animation: pulseLed 0.35s ease-in-out 4;
+}
+
+/* Result Banner */
+.result-card {
+  width: 100%;
+  max-width: 360px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  min-height: 64px;
+  transition: all 0.3s ease;
+  min-width: 0;
+  gap: 10px;
+}
+
+.result-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.result-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #333340;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+}
+
+.result-badge.active-badge {
+  transform: scale(1.15) rotate(10deg);
+}
+
+.result-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.result-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-sub {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spin-btn-quick {
+  background: linear-gradient(135deg, #E53935, #C62828);
+  border: none;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.4);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.spin-btn-quick:active {
+  transform: scale(0.94);
+}
+
+.spin-btn-quick:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* History and Footer */
+.app-footer {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  min-width: 0;
+}
+
+.history-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.history-label {
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.history-items {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.history-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  animation: fadeInDot 0.3s ease-out;
+  flex-shrink: 0;
+}
+
+@keyframes fadeInDot {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Modal styles for QR code */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  max-width: 340px;
+  width: 100%;
+  padding: 22px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  position: relative;
+  text-align: center;
+  transform: translateY(20px);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-overlay.open .modal-card {
+  transform: translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.modal-card h2 {
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+}
+
+.qr-code-img {
+  width: 180px;
+  height: 180px;
+  margin: 10px auto;
+  border-radius: 12px;
+  background: #FFFFFF;
+  padding: 8px;
+  display: block;
+}
+
+.qr-desc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.35;
+  margin-top: 6px;
+}
+
+/* Install Banner */
+.install-prompt-banner {
+  background: linear-gradient(135deg, rgba(251, 192, 45, 0.15), rgba(245, 127, 23, 0.15));
+  border: 1px solid rgba(251, 192, 45, 0.3);
+  border-radius: 14px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  width: 100%;
+  max-width: 440px;
+  gap: 8px;
+}
+
+.install-text {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.btn-install {
+  background: #FBC02D;
+  color: #121216;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}

@@ -358,13 +358,13 @@ class StarSpinner {
   }
 
   openQrModal() {
-    // Build QR code URL using local network IP
-    const localUrl = `http://192.168.1.57:8080`;
+    // Build QR code URL using live public GitHub Pages URL
+    const publicUrl = `https://dewin.github.io/stjarnsnurran/`;
     const qrImg = document.getElementById('qr-img');
     const qrUrlText = document.getElementById('qr-url');
 
-    qrUrlText.textContent = localUrl;
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(localUrl)}`;
+    qrUrlText.textContent = publicUrl;
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(publicUrl)}`;
     this.qrModal.classList.add('open');
   }
 
